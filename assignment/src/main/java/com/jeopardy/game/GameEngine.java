@@ -127,7 +127,7 @@ public class GameEngine implements Publisher {
     /**
      * 
      */
-    public void notififySubscribers() {
+    public void notifySubscribers() {
         // TODO implement Publisher.notififySubscribers() here
     }
 

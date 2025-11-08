@@ -36,7 +36,7 @@ public class Question {
     /**
      * 
      */
-    private Map options;
+    private Map<String, String> options;
 
     /**
      * 
@@ -46,7 +46,17 @@ public class Question {
 
 
 
+    public Map<String, String> getOptions() {
+        return this.options;
+    }
 
+    public String getCorrectAnswer() {
+        return this.correctAnswer;
+    }
+
+    public String getQuestion() {
+        return this.question;
+    }
 
     /**
      * @param answer 
