@@ -125,19 +125,21 @@ public class PDFReportFormat implements ReportFormat {
                 String summary = log.toSummaryString();
                 String[] lines = summary.split("\n");
                 
-                contentStream.beginText();
                 contentStream.setFont(PDType1Font.HELVETICA, 10);
                 
                 for (String line : lines) {
                     if (line.trim().isEmpty()) continue;
                     
+                    contentStream.beginText();
                     contentStream.newLineAtOffset(MARGIN, currentY);
-                    contentStream.showText(truncateLineIfNeeded(line));
+                    contentStream.showText(line);
+                    contentStream.endText();
+                    
                     currentY -= LINE_HEIGHT;
                 }
                 
-                contentStream.endText();
-                currentY -= LINE_HEIGHT * 0.5f;
+                // Add spacing between activity blocks
+                currentY -= LINE_HEIGHT * 1.5f;
             }
             
             // Check if we need a new page for scores
@@ -163,16 +165,16 @@ public class PDFReportFormat implements ReportFormat {
                 finalScores.put(log.playerId, log.scoreAfterPlay);
             }
             
-            contentStream.beginText();
-            contentStream.setFont(PDType1Font.HELVETICA, 11);
             
             for (Map.Entry<String, Integer> entry : finalScores.entrySet()) {
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA, 11);
                 contentStream.newLineAtOffset(MARGIN, currentY);
                 contentStream.showText(entry.getKey() + ": " + entry.getValue());
                 currentY -= LINE_HEIGHT;
+                contentStream.endText();
             }
             
-            contentStream.endText();
             
             // Add footer with generation timestamp
             contentStream.beginText();
@@ -200,19 +202,4 @@ public class PDFReportFormat implements ReportFormat {
             }
         }
     }
-
-    /**
-     * Truncates a line if it exceeds the page width to prevent overflow.
-     * 
-     * @param line the text line to truncate
-     * @return the truncated line or original if it fits
-     */
-    private String truncateLineIfNeeded(String line) {
-        final int MAX_CHARS = 90;
-        if (line.length() > MAX_CHARS) {
-            return line.substring(0, MAX_CHARS) + "...";
-        }
-        return line;
-    }
-
 }

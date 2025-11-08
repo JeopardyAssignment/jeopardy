@@ -107,7 +107,7 @@ public class ActivityLog {
 
         String line4 = String.format("Score after turn: %s = %d", this.playerId, this.scoreAfterPlay);
 
-        return line1 + line2 + line3 + line4;
+        return String.format("%s%s%s%s", line1, line2, line3, line4);
     }
 
 

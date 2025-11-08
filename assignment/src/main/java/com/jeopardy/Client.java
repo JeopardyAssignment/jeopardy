@@ -36,7 +36,7 @@ public class Client
         new ActivityLogBuilder()
         .setQuestion(q)
         .setActivity(ActivityType.SELECT_PLAYER_COUNT)
-        .setTurn(1)
+        .setTurn(2)
         .setTimestamp()
         .setPlayerId(new Player("Player 2"))
         .setScoreAfterPlay(400)
@@ -45,12 +45,12 @@ public class Client
         .setQuestionValue(200)
         .createActivityLog();
 
-        ReportGenerator generator = new ReportGenerator().setFormat(new CSVReportFormat());
+        ReportGenerator generator = new ReportGenerator().setFormat(new PDFReportFormat());
         generator.update(log);
         generator.update(log2);
 
         generator.createReport();
         
-        System.out.println(log.toSummaryString());
+        // System.out.println(log.toSummaryString());
     }
 }
