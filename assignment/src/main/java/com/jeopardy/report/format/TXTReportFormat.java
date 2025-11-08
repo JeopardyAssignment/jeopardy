@@ -17,13 +17,6 @@ import com.jeopardy.logging.ActivityLog;
  * The text report includes a header, individual activity summaries, and a footer.
  */
 public class TXTReportFormat implements ReportFormat {
-
-    /**
-     * Default constructor for TXTReportFormat.
-     */
-    public TXTReportFormat() {
-    }
-
     /**
      * Generates a plain text report from activity log data and writes it to a file.
      * 

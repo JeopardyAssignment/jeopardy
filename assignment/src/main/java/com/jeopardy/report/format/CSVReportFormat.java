@@ -17,13 +17,6 @@ import com.jeopardy.logging.ActivityLog;
  * Header: Case_ID, Player_ID, Activity, Timestamp, Category, Question_Value, Answer_Given, Result, Score_After_Play
  */
 public class CSVReportFormat implements ReportFormat {
-
-    /**
-     * Default constructor for CSVReportFormat.
-     */
-    public CSVReportFormat() {
-    }
-
     /**
      * Generates a CSV report from activity log data and writes it to a file.
      * 

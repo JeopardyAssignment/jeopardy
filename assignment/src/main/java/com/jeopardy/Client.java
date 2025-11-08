@@ -6,6 +6,7 @@ import com.jeopardy.logging.ActivityLogBuilder;
 import com.jeopardy.question.Question;
 import com.jeopardy.report.ReportGenerator;
 import com.jeopardy.report.format.CSVReportFormat;
+import com.jeopardy.report.format.DOCXReportFormat;
 import com.jeopardy.report.format.PDFReportFormat;
 import com.jeopardy.report.format.TXTReportFormat;
 import com.jeopardy.utils.ActivityType;
@@ -45,7 +46,7 @@ public class Client
         .setQuestionValue(200)
         .createActivityLog();
 
-        ReportGenerator generator = new ReportGenerator().setFormat(new PDFReportFormat());
+        ReportGenerator generator = new ReportGenerator().setFormat(new DOCXReportFormat());
         generator.update(log);
         generator.update(log2);
 

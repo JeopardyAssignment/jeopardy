@@ -22,7 +22,6 @@ import com.jeopardy.logging.ActivityLog;
  * - PDF (Portable Document Format)
  */
 public interface ReportFormat {
-
     /**
      * Generates a report based on the provided activity log data.
      * 
