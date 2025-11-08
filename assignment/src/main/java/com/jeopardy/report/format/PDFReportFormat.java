@@ -1,6 +1,5 @@
 package com.jeopardy.report.format;
 
-import java.io.*;
 import java.util.*;
 
 import com.jeopardy.logging.ActivityLog;

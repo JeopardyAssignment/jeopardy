@@ -2,9 +2,6 @@ package com.jeopardy.command;
 
 import com.jeopardy.question.Question;
 
-import java.io.*;
-import java.util.*;
-
 /**
  * 
  */

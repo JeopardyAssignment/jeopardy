@@ -1,8 +1,5 @@
 package com.jeopardy.question.loader;
 
-import java.io.*;
-import java.util.*;
-
 /**
  * 
  */

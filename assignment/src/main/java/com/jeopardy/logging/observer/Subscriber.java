@@ -2,9 +2,6 @@ package com.jeopardy.logging.observer;
 
 import com.jeopardy.logging.ActivityLog;
 
-import java.io.*;
-import java.util.*;
-
 /**
  * 
  */

@@ -1,6 +1,5 @@
 package com.jeopardy.question;
 
-import java.io.*;
 import java.util.*;
 
 /**

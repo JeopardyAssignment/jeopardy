@@ -4,7 +4,6 @@ import com.jeopardy.logging.observer.Subscriber;
 import com.jeopardy.report.format.ReportFormat;
 import com.jeopardy.logging.ActivityLog;
 
-import java.io.*;
 import java.util.*;
 
 /**

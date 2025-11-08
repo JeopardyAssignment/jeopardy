@@ -1,8 +1,5 @@
 package com.jeopardy.game;
 
-import java.io.*;
-import java.util.*;
-
 /**
  * 
  */
