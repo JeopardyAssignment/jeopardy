@@ -15,7 +15,8 @@ public class Player implements Publisher {
     /**
      * Default constructor
      */
-    public Player() {
+    public Player(String id) {
+        this.id = id;
     }
 
     /**
@@ -46,8 +47,7 @@ public class Player implements Publisher {
      * @return
      */
     public String getId() {
-        // TODO implement here
-        return "";
+        return this.id;
     }
 
     /**

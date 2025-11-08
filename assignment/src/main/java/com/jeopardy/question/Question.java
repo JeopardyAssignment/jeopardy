@@ -11,6 +11,7 @@ public class Question {
      * Default constructor
      */
     public Question() {
+        this.isAnswered = false;
     }
 
     /**

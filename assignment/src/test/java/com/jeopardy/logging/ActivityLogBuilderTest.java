@@ -34,7 +34,7 @@ public class ActivityLogBuilderTest {
         mockQuestion = new Question();
         
         // Create a mock Player
-        mockPlayer = new Player();
+        mockPlayer = new Player("Player 1");
     }
 
     /**
