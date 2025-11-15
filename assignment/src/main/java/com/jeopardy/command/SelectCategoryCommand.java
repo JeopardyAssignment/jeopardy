@@ -20,7 +20,11 @@ public class SelectCategoryCommand implements Command {
      * 
      */
     public void execute() {
-        // TODO implement Command.execute() here
+        if (category == null || category.trim().isEmpty()) {
+           // System.out.println("Error: No category selected");
+            return;
+        }
+        
+        System.out.println("Category selected: " + category);
     }
-
 }

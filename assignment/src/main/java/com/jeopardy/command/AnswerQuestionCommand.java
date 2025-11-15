@@ -22,8 +22,16 @@ public class AnswerQuestionCommand implements Command {
     /**
      * 
      */
+        /**
+     * 
+     */
     public void execute() {
-        // TODO implement Command.execute() here
+   
+        if (question == null) {
+          //  System.out.println("Error: No question to answer");
+            return;
+        }
+        
+        System.out.println("Answer question command executed successfully");
     }
-
 }

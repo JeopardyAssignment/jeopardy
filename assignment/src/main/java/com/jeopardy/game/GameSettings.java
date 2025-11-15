@@ -21,8 +21,7 @@ public class GameSettings {
      * @return
      */
     public int getPlayerCount() {
-        // TODO implement here
-        return 0;
+           return this.playerCount;
     }
 
 }
