@@ -283,7 +283,7 @@ public class commandTest {
         Assert.assertNotNull("Question command should work in any order", questionCmd);
         
         System.out.println("SUCCESS: Commands executed in different orders successfully");
-        System.out.println("Execution order: Answer -> Category -> Question");
+        System.out.println("Execution order: Answer --> Category --> Question");
         System.out.println();
     }
 }
