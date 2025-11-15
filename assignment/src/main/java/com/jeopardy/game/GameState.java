@@ -13,6 +13,9 @@ public class GameState {
      * Default constructor
      */
     public GameState() {
+         this.players = new ArrayList<>();
+        this.currentTurn = 0;
+        this.currentScore = 0;
     }
 
     /**
@@ -43,46 +46,47 @@ public class GameState {
      * @return
      */
     public int getCurrentTurn() {
-        // TODO implement here
-        return 0;
+ return this.currentTurn;
+        
     }
 
     /**
      * @return
      */
     public ArrayList<Player> getPlayers() {
-        // TODO implement here
-        return null;
+         return this.players;
     }
 
     /**
      * @param players
      */
     public void setPlayer(ArrayList<Player> players) {
-        // TODO implement here
+       this.players = players;
     }
 
     /**
      * @return
      */
     public Player getCurrentPlayer() {
-        // TODO implement here
-        return null;
+         if (this.players == null || this.players.isEmpty()) {
+            return null;
+        }
+        int playerIndex = this.currentTurn % this.players.size();
+        return this.players.get(playerIndex);
     }
 
     /**
      * @param s
      */
     public void addScore(int s) {
-        // TODO implement here
+         this.currentScore = this.currentScore + s;
     }
 
     /**
      * @return
      */
     public int getScore() {
-        // TODO implement here
-        return 0;
+        return this.currentScore;
     }
 
 }

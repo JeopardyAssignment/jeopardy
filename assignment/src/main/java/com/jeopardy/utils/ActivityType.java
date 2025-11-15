@@ -4,13 +4,19 @@ package com.jeopardy.utils;
  * 
  */
 public enum ActivityType {
-    START_GAME,
+      START_GAME,
     LOAD_FILE,
     SELECT_PLAYER_COUNT,
     ENTER_PLAYER_NAME,
     SELECT_CATEGORY,
+    SELECT_QUESTION,
     ANSWER_QUESTION,
+    SCORE_UPDATED,
     GENERATE_REPORT,
     GENERATE_EVENT_LOG,
-    EXIT_GAME
+    EXIT_GAME,
+    GAME_UPDATE,
+    TURN_START,
+    TURN_END,
+    GAME_OVER
 }
