@@ -1,4 +1,4 @@
-package com.jeopardy.QuestionTest;
+package com.jeopardy.question;
 
 import com.jeopardy.question.Question;
 import com.jeopardy.question.QuestionService;

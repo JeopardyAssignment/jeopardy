@@ -1,4 +1,4 @@
-package com.jeopardy.gameTest;
+package com.jeopardy.game;
 
 import org.junit.Before;
 import org.junit.Test;
