@@ -1,7 +1,5 @@
 package com.jeopardy.question;
 
-import com.jeopardy.question.Question;
-import com.jeopardy.question.QuestionService;
 import com.jeopardy.question.loader.CSVQuestionLoader;
 import com.jeopardy.question.loader.JSONQuestionLoader;
 import com.jeopardy.question.loader.XMLQuestionLoader;

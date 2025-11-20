@@ -7,9 +7,6 @@ import org.junit.Assert;
 import com.jeopardy.command.SelectCategoryCommand;
 import com.jeopardy.command.SelectQuestionCommand;
 import com.jeopardy.command.AnswerQuestionCommand;
-import com.jeopardy.game.GameState;
-import com.jeopardy.game.GameEngine;
-import com.jeopardy.game.Player;
 import com.jeopardy.question.Question;
 
 import java.lang.reflect.Field;
@@ -20,7 +17,6 @@ public class GameIntegrationTest {
     private Player player1;
     private Player player2;
     private GameState gameState;
-    private GameEngine engine;
     private Question question;
 
     @Before
@@ -29,7 +25,7 @@ public class GameIntegrationTest {
         System.out.println("GAME INTEGRATION TEST SETUP");
         System.out.println("================================================");
 
-        engine = GameEngine.Instance();
+        GameEngine.Instance();
         player1 = new Player("Alice");
         player2 = new Player("Bob");
         gameState = new GameState();

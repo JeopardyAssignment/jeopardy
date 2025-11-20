@@ -12,17 +12,15 @@ import java.lang.reflect.Field;
 public class commandTest {
 
     private Player player1;
-    private Player player2;
-    private GameEngine engine;
     private Question question;
 
     @Before
     public void setUp() throws Exception {
-        engine = GameEngine.Instance();
+        GameEngine.Instance();
 
         // Create players
         player1 = new Player("Alice");
-        player2 = new Player("Bob");
+        new Player("Bob");
 
         // Create a question
         question = new Question();
