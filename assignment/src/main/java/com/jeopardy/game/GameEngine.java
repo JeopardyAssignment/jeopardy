@@ -291,13 +291,13 @@ public class GameEngine implements Publisher {
      */
     public void update() {
         this.onTurnStart();
-
+        
         Client.clear();
 
         Player currentPlayer = this.state.getCurrentPlayer();
 
+        
         System.out.println(String.format("=== %s's Turn (Score %s) ===", currentPlayer.getId(), currentPlayer.getCurrentScore()));
-
         currentPlayer.setCommand(new SelectCategoryCommand());
         currentPlayer.doCommand();
 
@@ -308,8 +308,8 @@ public class GameEngine implements Publisher {
 
         Client.clear();
 
+        System.out.println(String.format("=== %s's Turn (Score %s) ===", currentPlayer.getId(), currentPlayer.getCurrentScore()));
         String answer = Client.prompt(this.state.getCurrentQuestion(), this.scanner);
-
         currentPlayer.setCommand(new AnswerQuestionCommand(answer));
         currentPlayer.doCommand();
 

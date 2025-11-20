@@ -220,7 +220,7 @@ public class GameState {
             questionValueArray[i] = String.valueOf(questionValues.get(i));
         }
 
-        System.out.println(String.format("=== %s's Turn ===", this.getCurrentPlayer().getId()));
+        System.out.println(String.format("=== %s's Turn (Score %s) ===", getCurrentPlayer().getId(), getCurrentPlayer().getCurrentScore()));
         int questionValueIndex = Client.prompt("What question value? ", questionValueArray, scanner) - 1;
 
         Question selectedQuestion = this.questionService.getCategoryQuestionByValue(this.currentCategory, questionValues.get(questionValueIndex));

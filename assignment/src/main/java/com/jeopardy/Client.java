@@ -1,6 +1,9 @@
 package com.jeopardy;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.jeopardy.game.GameEngine;
 import com.jeopardy.question.Question;
@@ -8,6 +11,7 @@ import com.jeopardy.report.ReportGenerator;
 import com.jeopardy.report.format.CSVReportFormat;
 import com.jeopardy.report.format.DOCXReportFormat;
 import com.jeopardy.report.format.PDFReportFormat;
+import com.jeopardy.report.format.ReportFormat;
 import com.jeopardy.report.format.TXTReportFormat;
 
 /**
@@ -30,6 +34,7 @@ public class Client {
             generateReports(reportGenerator);
         }));
 
+        Client.showBanner();
         gameEngine.start();
     }
 
@@ -40,6 +45,8 @@ public class Client {
     public static void clear() {
         System.out.print("\033[H\033[2J\n");
         System.out.flush();
+
+        Client.showBanner();
     }
 
     public static void newLine() {
@@ -64,24 +71,16 @@ public class Client {
      */
     private static void generateReports(ReportGenerator reportGenerator) {
         try {
-            // Generate CSV report
-            reportGenerator.setFormat(new CSVReportFormat());
-            reportGenerator.createReport();
-            System.out.println("CSV report generated successfully.");
+            ArrayList<ReportFormat> formats = new ArrayList<>();
+            formats.add(new CSVReportFormat());
+            formats.add(new PDFReportFormat());
+            formats.add(new DOCXReportFormat());
+            formats.add(new TXTReportFormat());
 
-            // Generate TXT report
-            reportGenerator.setFormat(new TXTReportFormat());
-            reportGenerator.createReport();
-            System.out.println("TXT report generated successfully.");
-
-            // Generate DOCX report
-            reportGenerator.setFormat(new DOCXReportFormat());
-            reportGenerator.createReport();
-            System.out.println("DOCX report generated successfully.");
-            
-            reportGenerator.setFormat(new PDFReportFormat());
-            reportGenerator.createReport();
-            System.out.println("PDF report generated successfully.");
+            for (ReportFormat f : formats) {
+                reportGenerator.setFormat(f);
+                reportGenerator.createReport();
+            }
 
             System.out.println("\nReports saved to output/ directory.");
         } catch (Exception e) {
@@ -157,5 +156,20 @@ public class Client {
         } while (answer.isEmpty() || !options.containsKey(answer));
 
         return answer;
+    }
+
+
+    public static void showBanner() {
+        String filename = "./banner.txt";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+        System.out.println("\n");
     }
 }
