@@ -31,6 +31,7 @@ public class Player implements Publisher {
     private Command command;
     private final ArrayList<Subscriber> subscribers;
     private final ActivityLogBuilder activityLogBuilder;
+    private int currentScore;
 
     /**
      * Constructs a new Player with the specified ID.
@@ -43,6 +44,7 @@ public class Player implements Publisher {
         this.id = id;
         this.subscribers = new ArrayList<>();
         this.activityLogBuilder = new ActivityLogBuilder();
+        this.currentScore = 0;
     }
 
     /**
@@ -142,4 +144,21 @@ public class Player implements Publisher {
         return this.id;
     }
 
+    /**
+     * Gets the current score for this player.
+     *
+     * @return the player's current score
+     */
+    public int getCurrentScore() {
+        return this.currentScore;
+    }
+
+    /**
+     * Updates the player's current score by adding the specified value.
+     *
+     * @param s the score value to add (can be positive or negative)
+     */
+    public void updateCurrentScore(int s) {
+        this.currentScore += s;
+    }
 }

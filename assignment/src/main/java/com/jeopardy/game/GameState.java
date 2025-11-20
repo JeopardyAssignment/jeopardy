@@ -1,5 +1,6 @@
 package com.jeopardy.game;
 
+import com.jeopardy.Client;
 import com.jeopardy.question.Question;
 import com.jeopardy.question.QuestionService;
 import com.jeopardy.question.loader.QuestionLoader;
@@ -19,36 +20,33 @@ import java.util.Map;
  * - Current turn number
  * - List of players participating in the game
  * - Question service for managing game questions
- * - Current score tracking
  * - Current category selection
  * - Current question selection
  *
  * The GameState provides methods for:
  * - Accessing and modifying player list
  * - Determining the current player based on turn rotation
- * - Managing score updates
  * - Tracking turn progression
  * - Managing category and question selection
+ * - Loading questions from various file formats
  */
 public class GameState {
 
     private int currentTurn;
     private ArrayList<Player> players;
     private QuestionService questionService;
-    private int currentScore;
     private String currentCategory;
     private Question currentQuestion;
     private final Map<Integer, QuestionLoader> loaderRegistry;
 
     /**
      * Constructs a new GameState with default initial values.
-     * Initializes an empty player list, turn counter at 0, and score at 0.
+     * Initializes an empty player list and turn counter at 0.
      * Registers available question loaders for the Strategy pattern.
      */
     public GameState() {
         this.players = new ArrayList<>();
         this.currentTurn = 0;
-        this.currentScore = 0;
 
         // Register question loaders (Open/Closed Principle)
         this.loaderRegistry = new HashMap<>();
@@ -79,8 +77,7 @@ public class GameState {
      * Sets the list of players for the game.
      */
     public void setPlayers(Scanner scanner) {
-        
-        // a. Get the number of players
+        // Get the number of players
         int playerCount = 0;
 
         do {
@@ -93,7 +90,7 @@ public class GameState {
             }
         } while (playerCount < 1 || playerCount > 4);
 
-        // b. Set the player names
+        // Set the player names
         System.out.println("Please provide player names.");
         for (int i = 0; i < playerCount; i++) {
             String playerName;
@@ -107,7 +104,8 @@ public class GameState {
             } while (playerName.trim().isEmpty());
 
             // Add player to list
-            this.players.add(new Player(playerName.trim()));
+            Player newPlayer = new Player(playerName.trim());
+            this.players.add(newPlayer);
         }
     }
 
@@ -128,24 +126,6 @@ public class GameState {
     }
 
     /**
-     * Adds points to the current score.
-     *
-     * @param s the score value to add (can be positive or negative)
-     */
-    public void addScore(int s) {
-        this.currentScore = this.currentScore + s;
-    }
-
-    /**
-     * Gets the current game score.
-     *
-     * @return the current score value
-     */
-    public int getScore() {
-        return this.currentScore;
-    }
-
-    /**
      * Gets the question service associated with this game state.
      *
      * @return the QuestionService instance
@@ -161,33 +141,14 @@ public class GameState {
      * @param scanner the Scanner instance to use for input
      */
     public void setQuestionService(Scanner scanner) {
-        // a. Select file type
-        int optionIndex;
         String[] options = {"CSV", "JSON", "XML"};
+        int optionIndex = Client.prompt("What file type do you wish to load the game data with? ", options, scanner);
 
-        for (int i = 0; i < options.length; i++) {
-            System.out.println(String.format("%d) %s", i + 1, options[i]));
-        }
-        System.out.print("What file type do you wish to load the game data with? ");
-
-        do {
-            optionIndex = scanner.nextInt();
-            scanner.nextLine(); // Consume newline after nextInt()
-
-            if (!loaderRegistry.containsKey(optionIndex)) {
-                System.out.println("[Error]: Invalid option. Please select an option from the list above.");
-                System.out.print("What file type do you wish to load the game data with? ");
-            }
-        } while (!loaderRegistry.containsKey(optionIndex));
-
-        // b. Generate file name
         int arrayIndex = optionIndex - 1;
         String fileName = String.format("data/sample_game_%s.%s", options[arrayIndex], options[arrayIndex].toLowerCase());
 
-        // c. Get question loader from registry (OCP-compliant)
         QuestionLoader questionLoader = loaderRegistry.get(optionIndex);
 
-        // d. Create and set question service
         this.questionService = new QuestionService();
         this.questionService.setQuestions(questionLoader, fileName);
     }
@@ -209,12 +170,31 @@ public class GameState {
     }
 
     /**
-     * Sets the currently selected category.
+     * Prompts the user to select a category from available categories.
+     * Uses the Client.prompt() method to display options and validate input.
      *
-     * @param currentCategory the category name to set
+     * @param scanner the Scanner instance to use for input
+     * @return the selected category name
      */
-    public void setCurrentCategory(String currentCategory) {
-        this.currentCategory = currentCategory;
+    public String setCurrentCategory(Scanner scanner) {
+        ArrayList<String> categories = this.questionService.getCategories();
+        String[] categoryArray = categories.toArray(new String[0]);
+
+        int categoryIndex = Client.prompt("What category of question? ", categoryArray, scanner);
+
+        String selectedCategory = categoryArray[categoryIndex - 1];
+        this.currentCategory = selectedCategory;
+
+        return selectedCategory;
+    }
+
+    /**
+     * Gets all unique categories from unanswered questions.
+     *
+     * @return an ArrayList of unique category names from unanswered questions
+     */
+    public ArrayList<String> getCategories() {
+        return this.questionService.getCategories();
     }
 
     /**
@@ -227,12 +207,27 @@ public class GameState {
     }
 
     /**
-     * Sets the currently selected question.
+     * Prompts the user to select a question from available questions in the current category.
+     * Uses the Client.prompt() method to display options and validate input.
      *
-     * @param currentQuestion the Question object to set
+     * @param scanner the Scanner instance to use for input
+     * @return the selected Question object
      */
-    public void setCurrentQuestion(Question currentQuestion) {
-        this.currentQuestion = currentQuestion;
+    public Question setCurrentQuestion(Scanner scanner) {
+        ArrayList<Integer> questionValues = this.questionService.getCategoryQuestionValues(this.currentCategory);
+        String[] questionValueArray = new String[questionValues.size()];
+
+        for (int i = 0; i < questionValues.size(); i++) {
+            questionValueArray[i] = String.valueOf(questionValues.get(i));
+        }
+
+        System.out.println(String.format("\n=== %s's Turn ===", this.getCurrentPlayer().getId()));
+        int questionValueIndex = Client.prompt("What question value? ", questionValueArray, scanner) - 1;
+
+        Question selectedQuestion = this.questionService.getCategoryQuestionByValue(this.currentCategory, questionValues.get(questionValueIndex));
+        this.currentQuestion = selectedQuestion;
+
+        return selectedQuestion;
     }
 
 }

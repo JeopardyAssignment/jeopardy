@@ -1,7 +1,6 @@
 package com.jeopardy.command;
 
 import com.jeopardy.game.GameEngine;
-import com.jeopardy.question.Question;
 
 /**
  * SelectQuestionCommand encapsulates the action of selecting a question in the Jeopardy game.
@@ -15,32 +14,22 @@ import com.jeopardy.question.Question;
  */
 public class SelectQuestionCommand implements Command {
 
-    private final Question question;
     private final GameEngine engine;
 
     /**
-     * Constructs a SelectQuestionCommand with the specified question and game engine.
-     *
-     * @param question the Question object to select
-     * @param engine the GameEngine instance to interact with
+     * Constructs a SelectQuestionCommand.
+     * Gets the GameEngine singleton instance for interaction.
      */
-    public SelectQuestionCommand(Question question, GameEngine engine) {
-        this.question = question;
-        this.engine = engine;
+    public SelectQuestionCommand() {
+        this.engine = GameEngine.Instance();
     }
 
     /**
      * Executes the question selection command.
-     *
-     * Validates that the question is not null, then notifies the GameEngine
-     * of the selection. Displays an error message if validation fails.
+     * Prompts the user to select a question through the GameEngine.
      */
     @Override
     public void execute() {
-        if (question == null) {
-            System.out.println("Error: No question to answer");
-            return;
-        }
-        engine.selectQuestion(question);
+        engine.selectQuestion();
     }
 }

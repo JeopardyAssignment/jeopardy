@@ -173,6 +173,7 @@ public class Question {
      * @return true if the answer is correct, false otherwise
      */
     public boolean evaluate(String answer) {
+        this.isAnswered = true;
         return answer != null && answer.equalsIgnoreCase(this.correctAnswer);
     }
 
@@ -199,4 +200,20 @@ public class Question {
         return sb.toString();
     }
 
+    /**
+     * Returns a formatted string for prompting the user with this question.
+     * Includes the question text and multiple choice options, but not the correct answer.
+     *
+     * @return a formatted string suitable for displaying to players
+     */
+    public String promptString() {
+        StringBuilder sb = new StringBuilder();
+        if (this.options != null) {
+            for (Map.Entry<String, String> entry : this.options.entrySet()) {
+                sb.append(entry.getKey()).append(") ").append(entry.getValue()).append("\n");
+            }
+        }
+        sb.append(this.question).append(" ");
+        return sb.toString();
+    }
 }

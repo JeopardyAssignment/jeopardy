@@ -22,42 +22,39 @@ public class AnswerQuestionCommand implements Command {
     private final GameEngine engine;
 
     /**
-     * Constructs an AnswerQuestionCommand with the specified question, answer choice, and game engine.
+     * Constructs an AnswerQuestionCommand with the specified answer choice.
+     * Gets the GameEngine singleton instance and retrieves the current question.
      *
-     * @param question the Question object being answered
      * @param choice the player's answer choice
-     * @param engine the GameEngine instance to interact with
      */
-    public AnswerQuestionCommand(Question question, String choice, GameEngine engine) {
-        this.question = question;
+    public AnswerQuestionCommand(String choice) {
+        this.engine = GameEngine.Instance();
+        this.question = this.engine.getCurrentQuestion();
         this.choice = choice;
-        this.engine = engine;
     }
 
     /**
      * Executes the answer question command.
      *
-     * Validates that the question is not null, evaluates the player's answer,
-     * notifies subscribers via the GameEngine, and provides feedback on whether
-     * the answer was correct or incorrect.
+     * Evaluates the player's answer, updates the player's score if correct,
+     * and provides feedback. Notifies subscribers via the GameEngine.
      */
     @Override
     public void execute() {
         if (question == null) {
-            System.out.println("Error: No question to answer");
+            System.out.println("[Error]: No question to answer");
             return;
         }
 
-        boolean correct = question.evaluate(choice);
+        boolean isCorrect = question.evaluate(choice);
 
         engine.notifySubscribers();
 
-        System.out.println("Question: " + question.getQuestion());
-        if (correct) {
-            System.out.println("Correct! Answer submitted: " + choice);
+        if (isCorrect) {
+            engine.updateCurrentPlayerScore(question.getValue());
+            System.out.println("That is correct!");
         } else {
-            System.out.println("Incorrect. You submitted: " + choice);
-            System.out.println("Correct answer: " + question.getCorrectAnswer());
+            System.out.println("Incorrect. The correct answer is " + question.getCorrectAnswer());
         }
     }
 }

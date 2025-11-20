@@ -4,6 +4,10 @@ import com.jeopardy.logging.observer.Publisher;
 import com.jeopardy.logging.ActivityLogBuilder;
 import com.jeopardy.logging.observer.Subscriber;
 import com.jeopardy.question.Question;
+import com.jeopardy.Client;
+import com.jeopardy.command.AnswerQuestionCommand;
+import com.jeopardy.command.SelectCategoryCommand;
+import com.jeopardy.command.SelectQuestionCommand;
 import com.jeopardy.logging.ActivityLog;
 import com.jeopardy.utils.ActivityType;
 
@@ -94,6 +98,15 @@ public class GameEngine implements Publisher {
     }
 
     /**
+     * Updates the current player's score by adding the specified value.
+     *
+     * @param s the score value to add (can be positive or negative)
+     */
+    public void updateCurrentPlayerScore(int s) {
+        this.state.getCurrentPlayer().updateCurrentScore(s);
+    }
+
+    /**
      * Handles the start of a turn.
      *
      * Retrieves the current turn information and notifies subscribers
@@ -103,6 +116,11 @@ public class GameEngine implements Publisher {
         if (!isGameOver && state != null) {
             state.getCurrentTurn();
             notifySubscribers();
+        }
+
+        if (this.state.getQuestionService().getUnansweredQuestions().size() == 0) {
+            this.isGameOver = true;
+            this.onGameOver();
         }
     }
 
@@ -115,6 +133,8 @@ public class GameEngine implements Publisher {
         if (!isGameOver) {
             notifySubscribers();
         }
+
+        this.state.nextTurn();
     }
 
     /**
@@ -123,37 +143,33 @@ public class GameEngine implements Publisher {
      * Sets the game over flag and notifies all subscribers.
      */
     public void onGameOver() {
-        this.isGameOver = true;
         notifySubscribers();
     }
 
     /**
      * Handles category selection by a player.
      *
-     * Updates the current category in the game state and displays it to the console.
-     *
-     * @param category the category name that was selected
+     * Updates the current category in the game state.
      */
-    public void selectCategory(String category) {
+    public void selectCategory() {
         if (state != null) {
-            state.setCurrentCategory(category);
+            state.setCurrentCategory(scanner);
         }
-        System.out.println("Category selected: " + category);
     }
 
     /**
      * Handles question selection by a player.
      *
-     * Updates the current question in the game state and displays it to the console.
-     *
-     * @param question the Question that was selected
+     * Updates the current question in the game state.
      */
-    public void selectQuestion(Question question) {
+    public void selectQuestion() {
+        Question question = null;
+
         if (state != null) {
-            state.setCurrentQuestion(question);
+            question = state.setCurrentQuestion(this.scanner);
         }
+
         this.currentQuestion = question;
-        System.out.println("Question selected: " + question.getQuestion());
     }
 
     /**
@@ -207,11 +223,51 @@ public class GameEngine implements Publisher {
         }
     }
 
+    /**
+     * Starts the game by initializing players, loading questions, and beginning the game loop.
+     */
     public void start() {
-        // a. Set Players
         this.state.setPlayers(this.scanner);
+        Client.clear();
 
-        // b. Load questions
         this.state.setQuestionService(scanner);
+        Client.clear();
+
+        System.out.println(this.state.getCategories());
+
+        this.update();
+    }
+
+    /**
+     * Main game loop that handles a single turn.
+     * Recursively calls itself until the game is over.
+     */
+    public void update() {
+        this.onTurnStart();
+
+        Player currentPlayer = this.state.getCurrentPlayer();
+
+        System.out.println(String.format("\n=== %s's Turn ===", currentPlayer.getId()));
+
+        currentPlayer.setCommand(new SelectCategoryCommand());
+        currentPlayer.doCommand();
+
+        Client.clear();
+
+        currentPlayer.setCommand(new SelectQuestionCommand());
+        currentPlayer.doCommand();
+
+        Client.clear();
+
+        String answer = Client.prompt(this.currentQuestion, this.scanner);
+
+        currentPlayer.setCommand(new AnswerQuestionCommand(answer));
+        currentPlayer.doCommand();
+
+        this.onTurnEnd();
+
+        if (!this.isGameOver) {
+            this.update();
+        }
     }
 }

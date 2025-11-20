@@ -47,6 +47,28 @@ public class QuestionService {
     }
 
     /**
+     * Gets all questions from a specific category.
+     *
+     * @param category the category to filter by
+     * @return an ArrayList containing all questions in the specified category
+     */
+    public ArrayList<Question> getQuestionsByCategory(String category) {
+        if (this.questions == null) {
+            return new ArrayList<>();
+        }
+
+        ArrayList<Question> categoryQuestions = new ArrayList<>();
+
+        for (Question q : this.questions) {
+            if (q.getCategory().equals(category)) {
+                categoryQuestions.add(q);
+            }
+        }
+
+        return categoryQuestions;
+    }
+
+    /**
      * Gets all questions that have been answered.
      *
      * @return an ArrayList containing only questions where isAnswered is true
@@ -112,4 +134,66 @@ public class QuestionService {
         }
     }
 
+    /**
+     * Gets all unique categories from unanswered questions.
+     *
+     * @return an ArrayList of unique category names from unanswered questions
+     */
+    public ArrayList<String> getCategories() {
+        HashSet<String> categories = new HashSet<>();
+        
+        for (Question q: questions) {
+            if (!q.getIsAnswered()) {
+                categories.add(q.getCategory());
+            }
+        }
+
+        ArrayList<String> uniqueCategoryArrayList = new ArrayList<>();
+        uniqueCategoryArrayList.addAll(categories);
+
+        return uniqueCategoryArrayList;
+    }
+
+    /**
+     * Gets all unique question values for unanswered questions in a specific category.
+     * Values are returned in sorted order.
+     *
+     * @param category the category to get question values from
+     * @return an ArrayList of unique question values sorted in ascending order
+     */
+    public ArrayList<Integer> getCategoryQuestionValues(String category) {
+        TreeSet<Integer> questionValues = new TreeSet<>();
+
+        for (Question q: questions) {
+            if (!q.getIsAnswered() && q.getCategory().equals(category)) {
+                questionValues.add(q.getValue());
+            }
+        }
+
+        ArrayList<Integer> uniqueQuestionValueArrayList = new ArrayList<>();
+        uniqueQuestionValueArrayList.addAll(questionValues);
+
+        return uniqueQuestionValueArrayList;
+    }
+
+    /**
+     * Gets a specific question by category and value.
+     *
+     * @param category the category of the question
+     * @param value the point value of the question
+     * @return the Question object matching the category and value, or null if not found
+     */
+    public Question getCategoryQuestionByValue(String category, int value) {
+        if (this.questions == null) {
+            return null;
+        }
+
+        for (Question q : this.questions) {
+            if (q.getCategory().equals(category) && q.getValue() == value && !q.getIsAnswered()) {
+                return q;
+            }
+        }
+
+        return null;
+    }
 }

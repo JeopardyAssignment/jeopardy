@@ -14,34 +14,22 @@ import com.jeopardy.game.GameEngine;
  */
 public class SelectCategoryCommand implements Command {
 
-    private final String category;
     private final GameEngine engine;
 
     /**
-     * Constructs a SelectCategoryCommand with the specified category and game engine.
-     *
-     * @param category the name of the category to select
-     * @param engine the GameEngine instance to interact with
+     * Constructs a SelectCategoryCommand.
+     * Gets the GameEngine singleton instance for interaction.
      */
-    public SelectCategoryCommand(String category, GameEngine engine) {
-        this.category = category;
-        this.engine = engine;
+    public SelectCategoryCommand() {
+        this.engine = GameEngine.Instance();
     }
 
     /**
      * Executes the category selection command.
-     *
-     * Validates that the category is not null or empty, then processes the selection.
-     * Displays an error message if validation fails, otherwise confirms the selection.
+     * Prompts the user to select a category through the GameEngine.
      */
     @Override
     public void execute() {
-        if (category == null || category.trim().isEmpty()) {
-            System.out.println("Error: No category selected");
-            return;
-        }
-
-        System.out.println("Category selected: " + category);
-        this.engine.selectCategory(category);
+        this.engine.selectCategory();
     }
 }
