@@ -42,5 +42,6 @@ public class SelectCategoryCommand implements Command {
         }
 
         System.out.println("Category selected: " + category);
+        this.engine.selectCategory(category);
     }
 }

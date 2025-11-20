@@ -132,4 +132,14 @@ public class Player implements Publisher {
         }
     }
 
+    /**
+     * Returns a string representation of this player.
+     *
+     * @return the player's ID
+     */
+    @Override
+    public String toString() {
+        return this.id;
+    }
+
 }

@@ -32,7 +32,7 @@ import java.util.*;
 public class GameEngine implements Publisher {
 
     private static GameEngine instance;
-    private GameSettings settings;
+    private Scanner scanner;
     private GameState state;
     private final ArrayList<Subscriber> subscribers;
     private final ActivityLogBuilder activityLogBuilder;
@@ -44,24 +44,11 @@ public class GameEngine implements Publisher {
      * Use Instance() to get the game engine instance.
      */
     private GameEngine() {
-        this.settings = new GameSettings();
         this.state = new GameState();
         this.subscribers = new ArrayList<>();
         this.activityLogBuilder = new ActivityLogBuilder();
         this.isGameOver = false;
-    }
-
-    /**
-     * Private constructor with settings parameter.
-     *
-     * @param settings the GameSettings to initialize with
-     */
-    private GameEngine(GameSettings settings) {
-        this.settings = settings;
-        this.state = new GameState();
-        this.subscribers = new ArrayList<>();
-        this.activityLogBuilder = new ActivityLogBuilder();
-        this.isGameOver = false;
+        this.scanner = new Scanner(System.in);
     }
 
     /**
@@ -74,27 +61,9 @@ public class GameEngine implements Publisher {
      */
     public static GameEngine Instance() {
         if (instance == null) {
-            instance = new GameEngine(new GameSettings());
+            instance = new GameEngine();
         }
         return instance;
-    }
-
-    /**
-     * Gets the current game settings.
-     *
-     * @return the GameSettings object
-     */
-    public GameSettings getSettings() {
-        return this.settings;
-    }
-
-    /**
-     * Sets the game settings.
-     *
-     * @param settings the GameSettings to apply
-     */
-    public void setSettings(GameSettings settings) {
-        this.settings = settings;
     }
 
     /**
@@ -159,13 +128,30 @@ public class GameEngine implements Publisher {
     }
 
     /**
+     * Handles category selection by a player.
+     *
+     * Updates the current category in the game state and displays it to the console.
+     *
+     * @param category the category name that was selected
+     */
+    public void selectCategory(String category) {
+        if (state != null) {
+            state.setCurrentCategory(category);
+        }
+        System.out.println("Category selected: " + category);
+    }
+
+    /**
      * Handles question selection by a player.
      *
-     * Stores the selected question and displays it to the console.
+     * Updates the current question in the game state and displays it to the console.
      *
      * @param question the Question that was selected
      */
     public void selectQuestion(Question question) {
+        if (state != null) {
+            state.setCurrentQuestion(question);
+        }
         this.currentQuestion = question;
         System.out.println("Question selected: " + question.getQuestion());
     }
@@ -221,4 +207,11 @@ public class GameEngine implements Publisher {
         }
     }
 
+    public void start() {
+        // a. Set Players
+        this.state.setPlayers(this.scanner);
+
+        // b. Load questions
+        this.state.setQuestionService(scanner);
+    }
 }
