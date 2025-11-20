@@ -5,10 +5,7 @@ import com.jeopardy.logging.ActivityLog;
 import com.jeopardy.logging.ActivityLogBuilder;
 import com.jeopardy.question.Question;
 import com.jeopardy.report.ReportGenerator;
-import com.jeopardy.report.format.CSVReportFormat;
 import com.jeopardy.report.format.DOCXReportFormat;
-import com.jeopardy.report.format.PDFReportFormat;
-import com.jeopardy.report.format.TXTReportFormat;
 import com.jeopardy.utils.ActivityType;
 
 /**
@@ -31,6 +28,7 @@ public class Client
         .setCaseId("GAME-01")
         .setCategory("Design Patterns")
         .setQuestionValue(100)
+        .setAnswerGiven("A")
         .createActivityLog();
         
         ActivityLog log2 = 
@@ -44,6 +42,7 @@ public class Client
         .setCaseId("GAME-01")
         .setCategory("Design Patterns")
         .setQuestionValue(200)
+        .setAnswerGiven("A")
         .createActivityLog();
 
         ReportGenerator generator = new ReportGenerator().setFormat(new DOCXReportFormat());

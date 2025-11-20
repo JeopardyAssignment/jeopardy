@@ -29,33 +29,54 @@ public class QuestionService {
      * @return
      */
     public ArrayList<Question> getQuestions() {
-        // TODO implement here
-        return null;
+        if (this.questions == null) return new ArrayList<>();
+        return new ArrayList<>(this.questions);
     }
 
     /**
      * @return
      */
     public ArrayList<Question> getAnsweredQuestions() {
-        // TODO implement here
-        return null;
+        ArrayList<Question> answered = new ArrayList<>();
+        if (this.questions == null) return answered;
+        for (Question q : this.questions) {
+            if (q.getIsAnswered()) answered.add(q);
+        }
+        return answered;
     }
 
     /**
      * @return
      */
     public ArrayList<Question> getUnansweredQuestions() {
-        // TODO implement here
-        return null;
+        ArrayList<Question> unanswered = new ArrayList<>();
+        if (this.questions == null) return unanswered;
+        for (Question q : this.questions) {
+            if (!q.getIsAnswered()) unanswered.add(q);
+        }
+        return unanswered;
     }
 
     /**
      * @param loader 
      * @return
      */
-    public boolean setQuestions(QuestionLoader loader) {
-        // TODO implement here
-        return false;
+    public void setQuestions(QuestionLoader loader, String filename) {
+        if (loader == null) {
+            this.questions = new ArrayList<>();
+            return;
+        }
+
+        try {
+            ArrayList<Question> loaded = loader.load(filename);
+            if (loaded == null) loaded = new ArrayList<>();
+            this.questions = new ArrayList<>(loaded);
+        } catch (Exception e) {
+            System.out.println("Error loading questions from: " + filename);
+            e.printStackTrace();
+            this.questions = new ArrayList<>();
+        }
+        
     }
 
 }
