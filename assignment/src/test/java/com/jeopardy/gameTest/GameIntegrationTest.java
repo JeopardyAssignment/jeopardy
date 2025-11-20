@@ -243,8 +243,6 @@ public class GameIntegrationTest {
             SelectCategoryCommand command = new SelectCategoryCommand();
             player.setCommand(command);
             player.doCommand();
-            
-            operations++;
         }
         
         long endTime = System.currentTimeMillis();
