@@ -106,6 +106,7 @@ public class Question {
      * @param answer 
      * @return
      */
+
     public boolean evaluate(String answer) {
         if (answer.equalsIgnoreCase(this.correctAnswer)) {
             return true;
@@ -126,5 +127,6 @@ public class Question {
         sb.append("Is Answered: ").append(this.isAnswered).append("\n");
         return sb.toString();
     }
+
 
 }

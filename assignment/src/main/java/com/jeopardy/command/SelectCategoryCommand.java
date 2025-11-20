@@ -1,27 +1,35 @@
 package com.jeopardy.command;
 
+import com.jeopardy.game.GameEngine;
+
 /**
  * 
  */
 public class SelectCategoryCommand implements Command {
 
+    private String category;
+     private GameEngine engine;
     /**
      * Default constructor
      */
-    public SelectCategoryCommand() {
+    public SelectCategoryCommand(String category, GameEngine engine) {
+        this.category = category;
+        this.engine = engine;
     }
+    /**
+     * 
+     */
+
 
     /**
      * 
      */
-    private String category;
 
-    /**
-     * 
-     */
+    
+
     public void execute() {
         if (category == null || category.trim().isEmpty()) {
-           // System.out.println("Error: No category selected");
+           System.out.println("Error: No category selected");
             return;
         }
         
