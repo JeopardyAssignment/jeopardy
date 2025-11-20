@@ -77,9 +77,11 @@ public class TXTReportFormat implements ReportFormat {
             writer.write("\nFinal Scores:\n");
             Map<String, Integer> finalScores = new LinkedHashMap<>();
             for (ActivityLog log : data) {
-                finalScores.put(log.playerId, log.scoreAfterPlay);
+                if (log.playerId != null) {
+                    finalScores.put(log.playerId, log.scoreAfterPlay);
+                }
             }
-            
+
             for (Map.Entry<String, Integer> entry : finalScores.entrySet()) {
                 writer.write(entry.getKey() + ": " + entry.getValue() + "\n");
             }

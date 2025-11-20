@@ -113,9 +113,11 @@ public class DOCXReportFormat implements ReportFormat {
             // Extract final scores
             Map<String, Integer> finalScores = new LinkedHashMap<>();
             for (ActivityLog log : data) {
-                finalScores.put(log.playerId, log.scoreAfterPlay);
+                if (log.playerId != null) {
+                    finalScores.put(log.playerId, log.scoreAfterPlay);
+                }
             }
-            
+
             for (Map.Entry<String, Integer> entry : finalScores.entrySet()) {
                 XWPFParagraph score = document.createParagraph();
                 score.createRun().setText(entry.getKey() + ": " + entry.getValue());

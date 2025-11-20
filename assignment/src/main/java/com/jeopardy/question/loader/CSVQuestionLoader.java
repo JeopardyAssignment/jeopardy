@@ -76,12 +76,13 @@ public class CSVQuestionLoader implements QuestionLoader {
 
     /**
      * Parses a single CSV line into a Question object and adds it to the list.
+     * Handles quoted fields that may contain commas.
      *
      * @param line the CSV line to parse
      * @param questions the list to add the parsed question to
      */
     private void parseLineToQuestion(String line, ArrayList<Question> questions) {
-        String[] parts = line.split(",");
+        String[] parts = parseCSVLine(line);
         if (parts.length < 8) {
             return;
         }
@@ -107,6 +108,45 @@ public class CSVQuestionLoader implements QuestionLoader {
         question.setCorrectAnswer(parts[7].trim());
 
         questions.add(question);
+    }
+
+    /**
+     * Parses a CSV line handling quoted fields that may contain commas.
+     * Follows RFC 4180 CSV standard for quoted fields.
+     *
+     * @param line the CSV line to parse
+     * @return array of field values with quotes removed
+     */
+    private String[] parseCSVLine(String line) {
+        ArrayList<String> fields = new ArrayList<>();
+        StringBuilder currentField = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (c == '"') {
+                // Check if this is an escaped quote (two consecutive quotes)
+                if (inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    currentField.append('"');
+                    i++; // Skip the next quote
+                } else {
+                    // Toggle quote state
+                    inQuotes = !inQuotes;
+                }
+            } else if (c == ',' && !inQuotes) {
+                // End of field
+                fields.add(currentField.toString());
+                currentField = new StringBuilder();
+            } else {
+                currentField.append(c);
+            }
+        }
+
+        // Add the last field
+        fields.add(currentField.toString());
+
+        return fields.toArray(new String[0]);
     }
 
 }
