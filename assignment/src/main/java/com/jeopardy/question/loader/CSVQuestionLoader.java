@@ -1,62 +1,112 @@
 package com.jeopardy.question.loader;
+
 import java.util.ArrayList;
 import com.jeopardy.question.Question;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
 /**
- * 
+ * CSVQuestionLoader loads questions from CSV (Comma-Separated Values) files.
+ *
+ * This class implements the QuestionLoader interface and provides functionality
+ * to parse CSV files containing Jeopardy questions.
+ *
+ * Expected CSV format (8 columns):
+ * Category, Value, Question, Option1, Option2, Option3, Option4, CorrectAnswer
+ *
+ * Example:
+ * Science,100,What is H2O?,Water,Hydrogen,Oxygen,Salt,A
+ *
+ * Features:
+ * - Automatically detects and skips header rows (lines containing "category")
+ * - Parses each row into a Question object with labeled options (A, B, C, D)
+ * - Handles malformed rows gracefully by skipping them
+ * - Provides error messages for file I/O issues
  */
 public class CSVQuestionLoader implements QuestionLoader {
 
     /**
-     * Default constructor
+     * Constructs a new CSVQuestionLoader.
      */
     public CSVQuestionLoader() {
     }
 
     /**
-     * @param filename 
-     * @return
+     * Loads questions from a CSV file.
+     *
+     * Parses the CSV file line by line, creating Question objects from each valid row.
+     * The first line is checked to see if it's a header row (contains "category").
+     * If not a header, it's parsed as a question.
+     *
+     * Each CSV row must have at least 8 columns:
+     * 1. Category name
+     * 2. Point value
+     * 3. Question text
+     * 4-7. Four answer options
+     * 8. Correct answer (A, B, C, or D)
+     *
+     * @param filename the path to the CSV file containing questions
+     * @return an ArrayList of Question objects parsed from the file
      */
+    @Override
     public ArrayList<Question> load(String filename) {
         ArrayList<Question> questions = new ArrayList<>();
-        // TODO implement QuestionLoader.load() here
+
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String firstLine = reader.readLine();
 
+            // Check if first line is data (not a header)
             if (firstLine != null && !firstLine.toLowerCase().contains("category")) {
-                String[] parts = firstLine.split(",");
-                if (parts.length >= 8) {
-                    Question question = new Question();
-                    question.setCategory(parts[0]);
-                    try { question.setValue(Integer.parseInt(parts[1])); } catch (Exception e) {}
-                    question.setQuestion(parts[2]);
-                    String[] answers = {parts[3], parts[4], parts[5], parts[6]};
-                    question.setOptions(answers);
-                    question.setCorrectAnswer(parts[7]);
-                    questions.add(question);
-                }
+                parseLineToQuestion(firstLine, questions);
             }
 
+            // Read remaining lines
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length < 8) continue;
-                Question question = new Question();
-                question.setCategory(parts[0]);
-                try { question.setValue(Integer.parseInt(parts[1])); } catch (Exception e) {}
-                question.setQuestion(parts[2]);
-                String[] answers = {parts[3], parts[4], parts[5], parts[6]};
-                question.setOptions(answers);
-                question.setCorrectAnswer(parts[7]);
-                questions.add(question);
+                parseLineToQuestion(line, questions);
             }
         } catch (IOException e) {
             System.out.println("Error reading file: " + filename);
             e.printStackTrace();
         }
+
         return questions;
+    }
+
+    /**
+     * Parses a single CSV line into a Question object and adds it to the list.
+     *
+     * @param line the CSV line to parse
+     * @param questions the list to add the parsed question to
+     */
+    private void parseLineToQuestion(String line, ArrayList<Question> questions) {
+        String[] parts = line.split(",");
+        if (parts.length < 8) {
+            return;
+        }
+
+        Question question = new Question();
+        question.setCategory(parts[0].trim());
+
+        try {
+            question.setValue(Integer.parseInt(parts[1].trim()));
+        } catch (NumberFormatException e) {
+            // If value parsing fails, default to 0
+        }
+
+        question.setQuestion(parts[2].trim());
+
+        String[] answers = {
+            parts[3].trim(),
+            parts[4].trim(),
+            parts[5].trim(),
+            parts[6].trim()
+        };
+        question.setOptions(answers);
+        question.setCorrectAnswer(parts[7].trim());
+
+        questions.add(question);
     }
 
 }
