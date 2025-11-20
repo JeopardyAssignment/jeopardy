@@ -5,11 +5,11 @@ import com.jeopardy.game.GameState;
 import com.jeopardy.logging.observer.Publisher;
 import com.jeopardy.logging.ActivityLogBuilder;
 import com.jeopardy.logging.observer.Subscriber;
+import com.jeopardy.question.Question;
 import com.jeopardy.logging.ActivityLog; 
 import com.jeopardy.utils.ActivityType;
 
 import java.util.*;
-import java.util.Date;
 
 /**
  * 
@@ -51,6 +51,7 @@ public class GameEngine implements Publisher {
      * 
      */
     public boolean isGameOver;
+    private Question currentQuestion;
 
 
 
@@ -146,6 +147,11 @@ public class GameEngine implements Publisher {
     /**
      * 
      */
+    public void selectQuestion(Question question) {
+    this.currentQuestion = question;
+    System.out.println("Question selected: " + question.getQuestion());
+}
+
   public void notifySubscribers() {
     for (Subscriber subscriber : subscribers) {
         if (subscriber != null) {

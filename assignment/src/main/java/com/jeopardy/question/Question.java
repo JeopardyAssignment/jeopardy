@@ -63,9 +63,10 @@ public class Question {
      * @param answer 
      * @return
      */
-    public boolean evaluate(String answer) {
-        // TODO implement here
-        return false;
-    }
+   public boolean evaluate(String answer) {
+    if (answer == null || correctAnswer == null) return false;
+    return correctAnswer.equals(answer);
+}
+
 
 }

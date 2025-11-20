@@ -1,5 +1,6 @@
 package com.jeopardy.command;
 
+import com.jeopardy.game.GameEngine;
 import com.jeopardy.question.Question;
 
 /**
@@ -10,13 +11,17 @@ public class SelectQuestionCommand implements Command {
     /**
      * Default constructor
      */
-    public SelectQuestionCommand() {
+   public SelectQuestionCommand(Question question, GameEngine engine) {
+        this.question = question;
+        this.engine = engine;
     }
 
     /**
      * 
      */
     private Question question;
+    private GameEngine engine;
+
 
 
     /**
@@ -28,13 +33,16 @@ public class SelectQuestionCommand implements Command {
         /**
      * 
      */
+
+   
+
     public void execute() {
         // TODO implement Command.execute() here
         if (question == null) {
-            //System.out.println("Error: No question to answer");
+            System.out.println("Error: No question to answer");
             return;
         }
-        
-        System.out.println("Answer question command executed");
-    }
+        engine.selectQuestion(question);
+        //System.out.println("Question selected: " + question.getQuestion());
+}
 }
