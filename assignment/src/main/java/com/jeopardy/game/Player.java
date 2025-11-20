@@ -34,8 +34,7 @@ public class Player implements Publisher {
 
     /**
      * Constructs a new Player with the specified ID.
-     *
-     * Initializes the subscriber list and activity log builder.
+     * Initializes the subscriber list and sets the initial score to 0.
      *
      * @param id the unique identifier for this player
      */
@@ -47,6 +46,8 @@ public class Player implements Publisher {
         this.notifySubscribers();
     }
 
+    // ==================== Player Identity ====================
+
     /**
      * Gets the unique identifier for this player.
      *
@@ -57,10 +58,41 @@ public class Player implements Publisher {
     }
 
     /**
-     * Sets the command to be executed by this player.
+     * Returns a string representation of this player.
      *
-     * This method implements the Command pattern, allowing different
-     * commands to be assigned and executed dynamically.
+     * @return the player's ID
+     */
+    @Override
+    public String toString() {
+        return this.id;
+    }
+
+    // ==================== Score Management ====================
+
+    /**
+     * Gets the current score for this player.
+     *
+     * @return the player's current score
+     */
+    public int getCurrentScore() {
+        return this.currentScore;
+    }
+
+    /**
+     * Updates the player's current score by adding the specified value.
+     *
+     * @param s the score value to add (can be positive or negative)
+     */
+    public void updateCurrentScore(int s) {
+        this.currentScore += s;
+    }
+
+    // ==================== Command Pattern Implementation ====================
+
+    /**
+     * Sets the command to be executed by this player.
+     * This implements the Command pattern, allowing different commands
+     * to be assigned and executed dynamically.
      *
      * @param command the Command object to execute
      */
@@ -70,9 +102,7 @@ public class Player implements Publisher {
 
     /**
      * Executes the currently set command.
-     *
      * If no command is set, this method does nothing.
-     * This is the primary way players perform actions in the game.
      */
     public void doCommand() {
         if (this.command != null) {
@@ -80,11 +110,11 @@ public class Player implements Publisher {
         }
     }
 
+    // ==================== Observer Pattern Implementation ====================
+
     /**
      * Registers a subscriber to receive notifications about this player's activities.
-     *
-     * Duplicate subscriptions are prevented. This method implements the
-     * Observer pattern's subscribe operation.
+     * Duplicate subscriptions are prevented.
      *
      * @param s the Subscriber to register
      */
@@ -98,9 +128,6 @@ public class Player implements Publisher {
     /**
      * Unregisters a subscriber from receiving notifications.
      *
-     * After unsubscription, the subscriber will no longer receive
-     * activity updates from this player.
-     *
      * @param s the Subscriber to unregister
      */
     @Override
@@ -111,10 +138,8 @@ public class Player implements Publisher {
     }
 
     /**
-     * Notifies all registered subscribers of a game activity.
-     *
-     * Creates an ActivityLog with basic information and sends it to all subscribers.
-     * This method is typically called after significant player actions.
+     * Notifies all registered subscribers of player creation.
+     * Creates an ActivityLog for the ENTER_PLAYER_NAME event and sends it to all subscribers.
      */
     @Override
     public void notifySubscribers() {
@@ -133,33 +158,5 @@ public class Player implements Publisher {
                 }
             }
         }
-    }
-
-    /**
-     * Returns a string representation of this player.
-     *
-     * @return the player's ID
-     */
-    @Override
-    public String toString() {
-        return this.id;
-    }
-
-    /**
-     * Gets the current score for this player.
-     *
-     * @return the player's current score
-     */
-    public int getCurrentScore() {
-        return this.currentScore;
-    }
-
-    /**
-     * Updates the player's current score by adding the specified value.
-     *
-     * @param s the score value to add (can be positive or negative)
-     */
-    public void updateCurrentScore(int s) {
-        this.currentScore += s;
     }
 }

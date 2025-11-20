@@ -28,12 +28,14 @@ public class SelectQuestionCommand implements Command {
 
     /**
      * Executes the question selection command.
-     * Prompts the user to select a question through the GameEngine.
+     * Prompts the user to select a question and logs the activity.
      */
     @Override
     public void execute() {
+        // Prompt player to select a question
         engine.selectQuestion();
 
+        // Log the question selection activity
         engine.setCurrentActivityLog(
             new ActivityLogBuilder()
                     .setCaseId("GAME-001")
@@ -47,6 +49,7 @@ public class SelectQuestionCommand implements Command {
                     .createActivityLog()
         );
 
+        // Notify all subscribers of the activity
         engine.notifySubscribers();
     }
 }

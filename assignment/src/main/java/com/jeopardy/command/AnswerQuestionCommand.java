@@ -37,9 +37,8 @@ public class AnswerQuestionCommand implements Command {
 
     /**
      * Executes the answer question command.
-     *
-     * Evaluates the player's answer, updates the player's score if correct,
-     * and provides feedback. Notifies subscribers via the GameEngine.
+     * Evaluates the player's answer, updates score if correct, provides feedback,
+     * and logs the activity.
      */
     @Override
     public void execute() {
@@ -51,9 +50,11 @@ public class AnswerQuestionCommand implements Command {
         boolean isCorrect = question.evaluate(choice);
 
         if (isCorrect) {
+            // Award points for correct answer
             engine.updateCurrentPlayerScore(question.getValue());
             System.out.println("That is correct!");
 
+            // Log correct answer activity
             engine.setCurrentActivityLog(
                 new ActivityLogBuilder()
                         .setCaseId("GAME-001")
@@ -70,8 +71,10 @@ public class AnswerQuestionCommand implements Command {
                         .createActivityLog()
             );
         } else {
+            // No points for incorrect answer
             System.out.println("Incorrect. The correct answer is " + question.getCorrectAnswer());
 
+            // Log incorrect answer activity
             engine.setCurrentActivityLog(
                 new ActivityLogBuilder()
                         .setCaseId("GAME-001")
@@ -89,6 +92,7 @@ public class AnswerQuestionCommand implements Command {
             );
         }
 
+        // Notify all subscribers of the activity
         engine.notifySubscribers();
     }
 }

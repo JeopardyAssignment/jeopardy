@@ -20,6 +20,8 @@ import com.jeopardy.report.format.TXTReportFormat;
 public class Client {
     private static GameEngine gameEngine;
     
+    // ==================== Main Entry Point ====================
+
     public static void main(String[] args) {
         ReportGenerator reportGenerator = new ReportGenerator();
 
@@ -38,6 +40,8 @@ public class Client {
         gameEngine.start();
     }
 
+    // ==================== UI Helper Methods ====================
+
     /**
      * Clears the console by printing newlines.
      * This is a cross-platform solution that works in all environments.
@@ -49,11 +53,17 @@ public class Client {
         Client.showBanner();
     }
 
+    /**
+     * Prints a blank line to the console.
+     */
     public static void newLine() {
         System.out.println();
     }
-    
-    
+
+    /**
+     * Pauses execution and waits for user to press any key.
+     * Used between turns to give players time to read results.
+     */
     public static void await() {
         try {
             System.out.println("\nPress any key to continue...\n");
@@ -64,30 +74,23 @@ public class Client {
     }
 
     /**
-     * Generates reports in multiple formats (CSV and TXT) when the game ends.
-     * Creates an output directory if it doesn't exist and saves the reports there.
-     *
-     * @param reportGenerator the ReportGenerator containing collected activity logs
+     * Displays the game banner from a file.
      */
-    private static void generateReports(ReportGenerator reportGenerator) {
-        try {
-            ArrayList<ReportFormat> formats = new ArrayList<>();
-            formats.add(new CSVReportFormat());
-            formats.add(new PDFReportFormat());
-            formats.add(new DOCXReportFormat());
-            formats.add(new TXTReportFormat());
+    public static void showBanner() {
+        String filename = "./banner.txt";
 
-            for (ReportFormat f : formats) {
-                reportGenerator.setFormat(f);
-                reportGenerator.createReport();
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
             }
-
-            System.out.println("\nReports saved to output/ directory.");
-        } catch (Exception e) {
-            System.err.println("Error generating reports: " + e.getMessage());
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
         }
+        System.out.println("\n");
     }
+
+    // ==================== User Input Methods ====================
 
     /**
      * Prompts the user for an integer input within a specified range.
@@ -158,18 +161,31 @@ public class Client {
         return answer;
     }
 
+    // ==================== Report Generation ====================
 
-    public static void showBanner() {
-        String filename = "./banner.txt";
+    /**
+     * Generates reports in multiple formats (CSV, PDF, DOCX, TXT) when the game ends.
+     * Creates an output directory if it doesn't exist and saves the reports there.
+     *
+     * @param reportGenerator the ReportGenerator containing collected activity logs
+     */
+    private static void generateReports(ReportGenerator reportGenerator) {
+        try {
+            ArrayList<ReportFormat> formats = new ArrayList<>();
+            formats.add(new CSVReportFormat());
+            formats.add(new PDFReportFormat());
+            formats.add(new DOCXReportFormat());
+            formats.add(new TXTReportFormat());
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
+            for (ReportFormat f : formats) {
+                reportGenerator.setFormat(f);
+                reportGenerator.createReport();
             }
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
+
+            System.out.println("\nReports saved to output/ directory.");
+        } catch (Exception e) {
+            System.err.println("Error generating reports: " + e.getMessage());
+            e.printStackTrace();
         }
-        System.out.println("\n");
     }
 }

@@ -46,13 +46,15 @@ public class GameState {
     public GameState() {
         this.players = new ArrayList<>();
         this.currentTurn = 0;
-        
+
         // Register question loaders (Open/Closed Principle)
         this.loaderRegistry = new HashMap<>();
         this.loaderRegistry.put(1, new CSVQuestionLoader());
         this.loaderRegistry.put(2, new JSONQuestionLoader());
         this.loaderRegistry.put(3, new XMLQuestionLoader());
     }
+
+    // ==================== Turn Management ====================
 
     /**
      * Gets the current turn number.
@@ -64,6 +66,15 @@ public class GameState {
     }
 
     /**
+     * Advances to the next turn.
+     */
+    public void nextTurn() {
+        this.currentTurn++;
+    }
+
+    // ==================== Player Management ====================
+
+    /**
      * Gets the list of players in the game.
      *
      * @return an ArrayList of Player objects
@@ -73,12 +84,15 @@ public class GameState {
     }
 
     /**
-     * Sets the list of players for the game.
+     * Prompts for and sets the list of players for the game.
+     * Validates player count (1-4) and ensures non-empty player names.
+     *
+     * @param scanner the Scanner instance to use for input
      */
     public void setPlayers(Scanner scanner) {
-        // Get the number of players
         int playerCount = 0;
 
+        // Get number of players
         do {
             System.out.print("How many players (1-4)? ");
             playerCount = scanner.nextInt();
@@ -89,7 +103,7 @@ public class GameState {
             }
         } while (playerCount < 1 || playerCount > 4);
 
-        // Set the player names
+        // Get player names
         System.out.println("Please provide player names.");
         for (int i = 0; i < playerCount; i++) {
             String playerName;
@@ -102,7 +116,6 @@ public class GameState {
                 }
             } while (playerName.trim().isEmpty());
 
-            // Add player to list
             Player newPlayer = new Player(playerName.trim());
             this.players.add(newPlayer);
         }
@@ -110,9 +123,7 @@ public class GameState {
 
     /**
      * Gets the player whose turn it currently is.
-     *
      * Uses modulo arithmetic to rotate through players based on turn number.
-     * Returns null if no players are in the game.
      *
      * @return the Player object for the current turn, or null if no players exist
      */
@@ -124,6 +135,8 @@ public class GameState {
         return this.players.get(playerIndex);
     }
 
+    // ==================== Question Service Management ====================
+
     /**
      * Gets the question service associated with this game state.
      *
@@ -134,10 +147,11 @@ public class GameState {
     }
 
     /**
-     * Sets the question service for this game state by loading questions from a file.
-     * Uses a registry-based approach to select the appropriate loader, adhering to OCP.
+     * Prompts for file type and loads questions into the question service.
+     * Uses a registry-based approach to select the appropriate loader (Strategy pattern).
      *
      * @param scanner the Scanner instance to use for input
+     * @return true if questions loaded successfully, false otherwise
      */
     public boolean setQuestionService(Scanner scanner) {
         String[] options = {"CSV", "JSON", "XML"};
@@ -152,12 +166,7 @@ public class GameState {
         return this.questionService.setQuestions(questionLoader, fileName);
     }
 
-    /**
-     * Advances to the next turn.
-     */
-    public void nextTurn() {
-        this.currentTurn++;
-    }
+    // ==================== Category Management ====================
 
     /**
      * Gets the currently selected category.
@@ -170,7 +179,6 @@ public class GameState {
 
     /**
      * Prompts the user to select a category from available categories.
-     * Uses the Client.prompt() method to display options and validate input.
      *
      * @param scanner the Scanner instance to use for input
      * @return the selected category name
@@ -189,12 +197,15 @@ public class GameState {
 
     /**
      * Gets all unique categories from unanswered questions.
+     * Delegates to the question service.
      *
      * @return an ArrayList of unique category names from unanswered questions
      */
     public ArrayList<String> getCategories() {
         return this.questionService.getCategories();
     }
+
+    // ==================== Question Management ====================
 
     /**
      * Gets the currently selected question.
@@ -207,7 +218,7 @@ public class GameState {
 
     /**
      * Prompts the user to select a question from available questions in the current category.
-     * Uses the Client.prompt() method to display options and validate input.
+     * Displays available point values and validates user selection.
      *
      * @param scanner the Scanner instance to use for input
      * @return the selected Question object

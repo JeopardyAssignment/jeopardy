@@ -41,6 +41,8 @@ public class GameEngine implements Publisher {
     private ActivityLog currentActivityLog;
     private boolean isGameOver;
 
+    // ==================== Singleton Pattern ====================
+
     /**
      * Private constructor used by the Singleton pattern.
      * Use Instance() to get the game engine instance.
@@ -68,6 +70,8 @@ public class GameEngine implements Publisher {
         return instance;
     }
 
+    // ==================== State Accessors ====================
+
     /**
      * Gets the current game state.
      *
@@ -86,6 +90,16 @@ public class GameEngine implements Publisher {
         return this.isGameOver;
     }
 
+    /**
+     * Sets the current activity log for event tracking.
+     *
+     * @param log the ActivityLog to set
+     */
+    public void setCurrentActivityLog(ActivityLog log) {
+        this.currentActivityLog = log;
+    }
+
+    // ==================== Score Management ====================
 
     /**
      * Updates the current player's score by adding the specified value.
@@ -96,10 +110,11 @@ public class GameEngine implements Publisher {
         this.state.getCurrentPlayer().updateCurrentScore(s);
     }
 
+    // ==================== Game Flow Control ====================
+
     /**
      * Handles the start of a turn.
-     *
-     * Retrieves the current turn information and checks if game is over.
+     * Checks if all questions have been answered, triggering game over if so.
      */
     public void onTurnStart() {
         if (!isGameOver && state != null) {
@@ -111,14 +126,9 @@ public class GameEngine implements Publisher {
         }
     }
 
-    public void setCurrentActivityLog(ActivityLog log) {
-        this.currentActivityLog = log;
-    }
-
     /**
      * Handles the end of a turn.
-     *
-     * Advances to the next turn.
+     * Advances to the next turn in the rotation.
      */
     public void onTurnEnd() {
         this.state.nextTurn();
@@ -126,58 +136,61 @@ public class GameEngine implements Publisher {
 
     /**
      * Handles the game over condition.
-     *
-     * Notifies all subscribers.
+     * Sets game over flag and notifies all subscribers.
      */
     public void onGameOver() {
         this.isGameOver = true;
         this.currentActivityLog = this.activityLogBuilder
                         .setCaseId("GAME-001")
+                        .setPlayerId("System")
                         .setActivity(ActivityType.GAME_OVER)
                         .setTimestamp()
                         .createActivityLog();
-        
+
         this.activityLogBuilder.reset();
         this.notifySubscribers();
     }
 
     /**
      * Handles the game start event.
-     *
-     * Notifies all subscribers.
+     * Logs the start and notifies all subscribers.
      */
     public void onGameStart() {
         this.currentActivityLog = this.activityLogBuilder
                         .setCaseId("GAME-001")
+                        .setPlayerId("System")
                         .setActivity(ActivityType.START_GAME)
                         .setTimestamp()
                         .createActivityLog();
-        
+
         this.activityLogBuilder.reset();
         this.notifySubscribers();
     }
 
     /**
      * Handles the file load event.
+     * Logs the result (SUCCESS or FAILED) and notifies subscribers.
      *
-     * Notifies all subscribers.
+     * @param state the result of the file load operation
      */
     public void onFileLoad(String state) {
         this.currentActivityLog = this.activityLogBuilder
                         .setCaseId("GAME-001")
+                        .setPlayerId("System")
                         .setActivity(ActivityType.LOAD_FILE)
                         .setTimestamp()
                         .setResult(state)
                         .createActivityLog();
-        
+
         this.activityLogBuilder.reset();
         this.notifySubscribers();
     }
 
+    // ==================== Player Actions ====================
+
     /**
      * Handles category selection by a player.
-     *
-     * Updates the current category in the game state.
+     * Delegates to game state to prompt for and set the current category.
      */
     public void selectCategory() {
         if (state != null) {
@@ -187,8 +200,7 @@ public class GameEngine implements Publisher {
 
     /**
      * Handles question selection by a player.
-     *
-     * Updates the current question in the game state.
+     * Delegates to game state to prompt for and set the current question.
      */
     public void selectQuestion() {
         if (state != null) {
@@ -196,9 +208,10 @@ public class GameEngine implements Publisher {
         }
     }
 
+    // ==================== Observer Pattern Implementation ====================
+
     /**
      * Registers a subscriber to receive game event notifications.
-     *
      * Duplicate subscriptions are prevented.
      *
      * @param s the Subscriber to register
@@ -207,20 +220,6 @@ public class GameEngine implements Publisher {
     public void subscribe(Subscriber s) {
         if (s != null && !subscribers.contains(s)) {
             subscribers.add(s);
-        }
-    }
-
-    /**
-     * Subscribes all players to the given subscriber.
-     * This should be called after players are initialized.
-     *
-     * @param s the Subscriber to register to all players
-     */
-    public void subscribePlayersTo(Subscriber s) {
-        if (state != null && state.getPlayers() != null) {
-            for (Player player : state.getPlayers()) {
-                player.subscribe(s);
-            }
         }
     }
 
@@ -238,9 +237,7 @@ public class GameEngine implements Publisher {
 
     /**
      * Notifies all registered subscribers of a game event.
-     *
-     * Creates an ActivityLog with current game information and sends it
-     * to all subscribers. Includes player information if available.
+     * Sends the current activity log to all subscribers.
      */
     @Override
     public void notifySubscribers() {
@@ -250,6 +247,22 @@ public class GameEngine implements Publisher {
             }
         }
     }
+
+    /**
+     * Subscribes all players to the given subscriber.
+     * Should be called after players are initialized.
+     *
+     * @param s the Subscriber to register to all players
+     */
+    public void subscribePlayersTo(Subscriber s) {
+        if (state != null && state.getPlayers() != null) {
+            for (Player player : state.getPlayers()) {
+                player.subscribe(s);
+            }
+        }
+    }
+
+    // ==================== Game Initialization & Main Loop ====================
 
     /**
      * Starts the game by initializing players, loading questions, and beginning the game loop.
@@ -269,6 +282,7 @@ public class GameEngine implements Publisher {
         this.currentActivityLog = this.activityLogBuilder
                                     .setCaseId("GAME-001")
                                     .setTimestamp()
+                                    .setPlayerId("System")
                                     .setActivity(ActivityType.SELECT_PLAYER_COUNT)
                                     .setResult(Integer.toString(this.state.getPlayers().size()))
                                     .createActivityLog();
@@ -288,26 +302,31 @@ public class GameEngine implements Publisher {
     /**
      * Main game loop that handles a single turn.
      * Recursively calls itself until the game is over.
+     * Each turn consists of: category selection, question selection, and answering.
      */
     public void update() {
         this.onTurnStart();
-        
+
         Client.clear();
 
         Player currentPlayer = this.state.getCurrentPlayer();
 
-        
+        // Display current player and score
         System.out.println(String.format("=== %s's Turn (Score %s) ===", currentPlayer.getId(), currentPlayer.getCurrentScore()));
+
+        // Step 1: Select category
         currentPlayer.setCommand(new SelectCategoryCommand());
         currentPlayer.doCommand();
 
         Client.clear();
 
+        // Step 2: Select question
         currentPlayer.setCommand(new SelectQuestionCommand());
         currentPlayer.doCommand();
 
         Client.clear();
 
+        // Step 3: Answer question
         System.out.println(String.format("=== %s's Turn (Score %s) ===", currentPlayer.getId(), currentPlayer.getCurrentScore()));
         String answer = Client.prompt(this.state.getCurrentQuestion(), this.scanner);
         currentPlayer.setCommand(new AnswerQuestionCommand(answer));
@@ -317,6 +336,7 @@ public class GameEngine implements Publisher {
 
         Client.await();
 
+        // Continue to next turn if game is not over
         if (!this.isGameOver) {
             this.update();
         }

@@ -88,7 +88,7 @@ public class PDFReportFormat implements ReportFormat {
             // Write player list
             Set<String> players = new LinkedHashSet<>();
             for (ActivityLog log : data) {
-                if (log.playerId != null) {
+                if (log.playerId != null && log.playerId != "System") {
                     players.add(log.playerId);
                 }
             }
@@ -164,7 +164,7 @@ public class PDFReportFormat implements ReportFormat {
             // Write scores
             Map<String, Integer> finalScores = new LinkedHashMap<>();
             for (ActivityLog log : data) {
-                if (log.playerId != null) {
+                if (log.playerId != null && log.playerId != "System") {
                     finalScores.put(log.playerId, log.scoreAfterPlay);
                 }
             }

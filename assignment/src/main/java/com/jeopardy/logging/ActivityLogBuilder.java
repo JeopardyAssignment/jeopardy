@@ -112,6 +112,17 @@ public class ActivityLogBuilder {
     }
 
     /**
+     * Sets the player ID from a Player object.
+     * 
+     * @param player the Player object whose ID will be extracted and set
+     * @return this ActivityLogBuilder instance for method chaining
+     */
+    public ActivityLogBuilder setPlayerId(String name) {
+        this.playerId = name;
+        return this;
+    }
+
+    /**
      * Sets the type of activity being logged.
      * 
      * @param t the ActivityType (e.g., SELECT_CATEGORY, SELECT_QUESTION, ANSWER_QUESTION)

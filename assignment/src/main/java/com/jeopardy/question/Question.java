@@ -36,6 +36,8 @@ public class Question {
         this.isAnswered = false;
     }
 
+    // ==================== Category Accessors ====================
+
     /**
      * Gets the category of this question.
      *
@@ -53,6 +55,8 @@ public class Question {
     public void setCategory(String category) {
         this.category = category;
     }
+
+    // ==================== Question Text Accessors ====================
 
     /**
      * Gets the question text.
@@ -72,6 +76,8 @@ public class Question {
         this.question = question;
     }
 
+    // ==================== Value Accessors ====================
+
     /**
      * Gets the point value of this question.
      *
@@ -90,6 +96,8 @@ public class Question {
         this.value = value;
     }
 
+    // ==================== Answer Management ====================
+
     /**
      * Gets the correct answer for this question.
      *
@@ -107,6 +115,38 @@ public class Question {
     public void setCorrectAnswer(String correctAnswer) {
         this.correctAnswer = correctAnswer;
     }
+
+    /**
+     * Checks whether this question has been answered.
+     *
+     * @return true if the question has been answered, false otherwise
+     */
+    public boolean getIsAnswered() {
+        return this.isAnswered;
+    }
+
+    /**
+     * Sets whether this question has been answered.
+     *
+     * @param isAnswered true if the question has been answered, false otherwise
+     */
+    public void setIsAnswered(boolean isAnswered) {
+        this.isAnswered = isAnswered;
+    }
+
+    /**
+     * Evaluates whether the given answer is correct.
+     * Marks the question as answered and performs case-insensitive comparison.
+     *
+     * @param answer the player's answer to evaluate
+     * @return true if the answer is correct, false otherwise
+     */
+    public boolean evaluate(String answer) {
+        this.isAnswered = true;
+        return answer != null && answer.equalsIgnoreCase(this.correctAnswer);
+    }
+
+    // ==================== Options Management ====================
 
     /**
      * Gets the map of answer options with their labels.
@@ -145,37 +185,7 @@ public class Question {
         }
     }
 
-    /**
-     * Checks whether this question has been answered.
-     *
-     * @return true if the question has been answered, false otherwise
-     */
-    public boolean getIsAnswered() {
-        return this.isAnswered;
-    }
-
-    /**
-     * Sets whether this question has been answered.
-     *
-     * @param isAnswered true if the question has been answered, false otherwise
-     */
-    public void setIsAnswered(boolean isAnswered) {
-        this.isAnswered = isAnswered;
-    }
-
-    /**
-     * Evaluates whether the given answer is correct.
-     *
-     * This method performs a case-insensitive comparison between the provided
-     * answer and the correct answer.
-     *
-     * @param answer the player's answer to evaluate
-     * @return true if the answer is correct, false otherwise
-     */
-    public boolean evaluate(String answer) {
-        this.isAnswered = true;
-        return answer != null && answer.equalsIgnoreCase(this.correctAnswer);
-    }
+    // ==================== String Representations ====================
 
     /**
      * Returns a string representation of this Question including all properties.

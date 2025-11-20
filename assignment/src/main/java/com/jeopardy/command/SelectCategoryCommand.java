@@ -28,12 +28,14 @@ public class SelectCategoryCommand implements Command {
 
     /**
      * Executes the category selection command.
-     * Prompts the user to select a category through the GameEngine.
+     * Prompts the user to select a category and logs the activity.
      */
     @Override
     public void execute() {
+        // Prompt player to select a category
         this.engine.selectCategory();
 
+        // Log the category selection activity
         engine.setCurrentActivityLog(
             new ActivityLogBuilder()
                     .setCaseId("GAME-001")
@@ -46,6 +48,7 @@ public class SelectCategoryCommand implements Command {
                     .createActivityLog()
         );
 
+        // Notify all subscribers of the activity
         engine.notifySubscribers();
     }
 }
