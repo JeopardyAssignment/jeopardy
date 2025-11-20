@@ -30,7 +30,6 @@ public class Player implements Publisher {
     private final String id;
     private Command command;
     private final ArrayList<Subscriber> subscribers;
-    private final ActivityLogBuilder activityLogBuilder;
     private int currentScore;
 
     /**
@@ -43,8 +42,9 @@ public class Player implements Publisher {
     public Player(String id) {
         this.id = id;
         this.subscribers = new ArrayList<>();
-        this.activityLogBuilder = new ActivityLogBuilder();
         this.currentScore = 0;
+
+        this.notifySubscribers();
     }
 
     /**
@@ -124,7 +124,8 @@ public class Player implements Publisher {
                     ActivityLog activity = new ActivityLogBuilder()
                         .setCaseId("GAME001")
                         .setPlayerId(this)
-                        .setActivity(ActivityType.GAME_UPDATE)
+                        .setResult(id)
+                        .setActivity(ActivityType.ENTER_PLAYER_NAME)
                         .setTimestamp()
                         .createActivityLog();
 

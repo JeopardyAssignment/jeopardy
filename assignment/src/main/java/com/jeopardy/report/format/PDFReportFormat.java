@@ -123,23 +123,25 @@ public class PDFReportFormat implements ReportFormat {
                 
                 // Write activity summary
                 String summary = log.toSummaryString();
-                String[] lines = summary.split("\n");
+                if (summary != null) {
+                    String[] lines = summary.split("\n");
                 
-                contentStream.setFont(PDType1Font.HELVETICA, 10);
-                
-                for (String line : lines) {
-                    if (line.trim().isEmpty()) continue;
+                    contentStream.setFont(PDType1Font.HELVETICA, 10);
                     
-                    contentStream.beginText();
-                    contentStream.newLineAtOffset(MARGIN, currentY);
-                    contentStream.showText(line);
-                    contentStream.endText();
+                    for (String line : lines) {
+                        if (line.trim().isEmpty()) continue;
+                        
+                        contentStream.beginText();
+                        contentStream.newLineAtOffset(MARGIN, currentY);
+                        contentStream.showText(line);
+                        contentStream.endText();
+                        
+                        currentY -= LINE_HEIGHT;
+                    }
                     
-                    currentY -= LINE_HEIGHT;
+                    // Add spacing between activity blocks
+                    currentY -= LINE_HEIGHT * 1.5f;
                 }
-                
-                // Add spacing between activity blocks
-                currentY -= LINE_HEIGHT * 1.5f;
             }
             
             // Check if we need a new page for scores

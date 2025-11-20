@@ -7,7 +7,6 @@ import com.jeopardy.question.loader.QuestionLoader;
 import com.jeopardy.question.loader.CSVQuestionLoader;
 import com.jeopardy.question.loader.JSONQuestionLoader;
 import com.jeopardy.question.loader.XMLQuestionLoader;
-
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +46,7 @@ public class GameState {
     public GameState() {
         this.players = new ArrayList<>();
         this.currentTurn = 0;
-
+        
         // Register question loaders (Open/Closed Principle)
         this.loaderRegistry = new HashMap<>();
         this.loaderRegistry.put(1, new CSVQuestionLoader());
@@ -140,7 +139,7 @@ public class GameState {
      *
      * @param scanner the Scanner instance to use for input
      */
-    public void setQuestionService(Scanner scanner) {
+    public boolean setQuestionService(Scanner scanner) {
         String[] options = {"CSV", "JSON", "XML"};
         int optionIndex = Client.prompt("What file type do you wish to load the game data with? ", options, scanner);
 
@@ -150,7 +149,7 @@ public class GameState {
         QuestionLoader questionLoader = loaderRegistry.get(optionIndex);
 
         this.questionService = new QuestionService();
-        this.questionService.setQuestions(questionLoader, fileName);
+        return this.questionService.setQuestions(questionLoader, fileName);
     }
 
     /**
@@ -221,7 +220,7 @@ public class GameState {
             questionValueArray[i] = String.valueOf(questionValues.get(i));
         }
 
-        System.out.println(String.format("\n=== %s's Turn ===", this.getCurrentPlayer().getId()));
+        System.out.println(String.format("=== %s's Turn ===", this.getCurrentPlayer().getId()));
         int questionValueIndex = Client.prompt("What question value? ", questionValueArray, scanner) - 1;
 
         Question selectedQuestion = this.questionService.getCategoryQuestionByValue(this.currentCategory, questionValues.get(questionValueIndex));
@@ -229,5 +228,4 @@ public class GameState {
 
         return selectedQuestion;
     }
-
 }

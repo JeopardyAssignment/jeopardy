@@ -3,14 +3,12 @@ package com.jeopardy.game;
 import com.jeopardy.logging.observer.Publisher;
 import com.jeopardy.logging.ActivityLogBuilder;
 import com.jeopardy.logging.observer.Subscriber;
-import com.jeopardy.question.Question;
 import com.jeopardy.Client;
 import com.jeopardy.command.AnswerQuestionCommand;
 import com.jeopardy.command.SelectCategoryCommand;
 import com.jeopardy.command.SelectQuestionCommand;
 import com.jeopardy.logging.ActivityLog;
 import com.jeopardy.utils.ActivityType;
-
 import java.util.*;
 
 /**
@@ -40,8 +38,8 @@ public class GameEngine implements Publisher {
     private GameState state;
     private final ArrayList<Subscriber> subscribers;
     private final ActivityLogBuilder activityLogBuilder;
+    private ActivityLog currentActivityLog;
     private boolean isGameOver;
-    private Question currentQuestion;
 
     /**
      * Private constructor used by the Singleton pattern.
@@ -88,14 +86,6 @@ public class GameEngine implements Publisher {
         return this.isGameOver;
     }
 
-    /**
-     * Gets the currently selected question.
-     *
-     * @return the current Question, or null if no question is selected
-     */
-    public Question getCurrentQuestion() {
-        return this.currentQuestion;
-    }
 
     /**
      * Updates the current player's score by adding the specified value.
@@ -109,41 +99,79 @@ public class GameEngine implements Publisher {
     /**
      * Handles the start of a turn.
      *
-     * Retrieves the current turn information and notifies subscribers
-     * if the game is not over.
+     * Retrieves the current turn information and checks if game is over.
      */
     public void onTurnStart() {
         if (!isGameOver && state != null) {
             state.getCurrentTurn();
-            notifySubscribers();
         }
 
         if (this.state.getQuestionService().getUnansweredQuestions().size() == 0) {
-            this.isGameOver = true;
             this.onGameOver();
         }
+    }
+
+    public void setCurrentActivityLog(ActivityLog log) {
+        this.currentActivityLog = log;
     }
 
     /**
      * Handles the end of a turn.
      *
-     * Notifies subscribers if the game is not over.
+     * Advances to the next turn.
      */
     public void onTurnEnd() {
-        if (!isGameOver) {
-            notifySubscribers();
-        }
-
         this.state.nextTurn();
     }
 
     /**
      * Handles the game over condition.
      *
-     * Sets the game over flag and notifies all subscribers.
+     * Notifies all subscribers.
      */
     public void onGameOver() {
-        notifySubscribers();
+        this.isGameOver = true;
+        this.currentActivityLog = this.activityLogBuilder
+                        .setCaseId("GAME-001")
+                        .setActivity(ActivityType.GAME_OVER)
+                        .setTimestamp()
+                        .createActivityLog();
+        
+        this.activityLogBuilder.reset();
+        this.notifySubscribers();
+    }
+
+    /**
+     * Handles the game start event.
+     *
+     * Notifies all subscribers.
+     */
+    public void onGameStart() {
+        this.currentActivityLog = this.activityLogBuilder
+                        .setCaseId("GAME-001")
+                        .setActivity(ActivityType.START_GAME)
+                        .setTimestamp()
+                        .createActivityLog();
+        
+        this.activityLogBuilder.reset();
+        this.notifySubscribers();
+    }
+
+    /**
+     * Handles the file load event.
+     *
+     * Notifies all subscribers.
+     */
+    public void onFileLoad(String state) {
+        this.currentActivityLog = this.activityLogBuilder
+                        .setCaseId("GAME-001")
+                        .setActivity(ActivityType.LOAD_FILE)
+                        .setTimestamp()
+                        .setResult(state)
+                        .createActivityLog();
+        
+        this.activityLogBuilder.reset();
+        this.notifySubscribers();
     }
 
     /**
@@ -163,13 +191,9 @@ public class GameEngine implements Publisher {
      * Updates the current question in the game state.
      */
     public void selectQuestion() {
-        Question question = null;
-
         if (state != null) {
-            question = state.setCurrentQuestion(this.scanner);
+            state.setCurrentQuestion(this.scanner);
         }
-
-        this.currentQuestion = question;
     }
 
     /**
@@ -183,6 +207,20 @@ public class GameEngine implements Publisher {
     public void subscribe(Subscriber s) {
         if (s != null && !subscribers.contains(s)) {
             subscribers.add(s);
+        }
+    }
+
+    /**
+     * Subscribes all players to the given subscriber.
+     * This should be called after players are initialized.
+     *
+     * @param s the Subscriber to register to all players
+     */
+    public void subscribePlayersTo(Subscriber s) {
+        if (state != null && state.getPlayers() != null) {
+            for (Player player : state.getPlayers()) {
+                player.subscribe(s);
+            }
         }
     }
 
@@ -208,17 +246,7 @@ public class GameEngine implements Publisher {
     public void notifySubscribers() {
         for (Subscriber subscriber : subscribers) {
             if (subscriber != null) {
-                ActivityLogBuilder builder = new ActivityLogBuilder()
-                    .setCaseId("GAME001")
-                    .setTimestamp()
-                    .setActivity(ActivityType.GAME_UPDATE);
-
-                if (state != null && state.getCurrentPlayer() != null) {
-                    builder.setPlayerId(state.getCurrentPlayer());
-                }
-
-                ActivityLog activity = builder.createActivityLog();
-                subscriber.update(activity);
+                subscriber.update(this.currentActivityLog);
             }
         }
     }
@@ -227,15 +255,34 @@ public class GameEngine implements Publisher {
      * Starts the game by initializing players, loading questions, and beginning the game loop.
      */
     public void start() {
+        this.onGameStart();
+
         this.state.setPlayers(this.scanner);
+
+        // Subscribe all players to the same subscribers as the GameEngine
+        for (Subscriber subscriber : subscribers) {
+            subscribePlayersTo(subscriber);
+        }
+
         Client.clear();
 
-        this.state.setQuestionService(scanner);
-        Client.clear();
+        this.currentActivityLog = this.activityLogBuilder
+                                    .setCaseId("GAME-001")
+                                    .setTimestamp()
+                                    .setActivity(ActivityType.SELECT_PLAYER_COUNT)
+                                    .setResult(Integer.toString(this.state.getPlayers().size()))
+                                    .createActivityLog();
+        this.activityLogBuilder.reset();
+        this.notifySubscribers();
 
-        System.out.println(this.state.getCategories());
+        if (this.state.setQuestionService(scanner)) {
+            this.onFileLoad("SUCCESS");
+            Client.clear();
 
-        this.update();
+            this.update();
+        } else {
+            this.onFileLoad("FAILED");
+        }
     }
 
     /**
@@ -245,9 +292,11 @@ public class GameEngine implements Publisher {
     public void update() {
         this.onTurnStart();
 
+        Client.clear();
+
         Player currentPlayer = this.state.getCurrentPlayer();
 
-        System.out.println(String.format("\n=== %s's Turn ===", currentPlayer.getId()));
+        System.out.println(String.format("=== %s's Turn (Score %s) ===", currentPlayer.getId(), currentPlayer.getCurrentScore()));
 
         currentPlayer.setCommand(new SelectCategoryCommand());
         currentPlayer.doCommand();
@@ -259,12 +308,14 @@ public class GameEngine implements Publisher {
 
         Client.clear();
 
-        String answer = Client.prompt(this.currentQuestion, this.scanner);
+        String answer = Client.prompt(this.state.getCurrentQuestion(), this.scanner);
 
         currentPlayer.setCommand(new AnswerQuestionCommand(answer));
         currentPlayer.doCommand();
 
         this.onTurnEnd();
+
+        Client.await();
 
         if (!this.isGameOver) {
             this.update();

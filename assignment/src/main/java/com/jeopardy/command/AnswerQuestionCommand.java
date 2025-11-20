@@ -1,7 +1,9 @@
 package com.jeopardy.command;
 
 import com.jeopardy.game.GameEngine;
+import com.jeopardy.logging.ActivityLogBuilder;
 import com.jeopardy.question.Question;
+import com.jeopardy.utils.ActivityType;
 
 /**
  * AnswerQuestionCommand encapsulates the action of answering a question in the Jeopardy game.
@@ -29,7 +31,7 @@ public class AnswerQuestionCommand implements Command {
      */
     public AnswerQuestionCommand(String choice) {
         this.engine = GameEngine.Instance();
-        this.question = this.engine.getCurrentQuestion();
+        this.question = this.engine.getState().getCurrentQuestion();
         this.choice = choice;
     }
 
@@ -48,13 +50,45 @@ public class AnswerQuestionCommand implements Command {
 
         boolean isCorrect = question.evaluate(choice);
 
-        engine.notifySubscribers();
-
         if (isCorrect) {
             engine.updateCurrentPlayerScore(question.getValue());
             System.out.println("That is correct!");
+
+            engine.setCurrentActivityLog(
+                new ActivityLogBuilder()
+                        .setCaseId("GAME-001")
+                        .setPlayerId(engine.getState().getCurrentPlayer())
+                        .setActivity(ActivityType.ANSWER_QUESTION)
+                        .setTimestamp()
+                        .setResult("Correct")
+                        .setCategory(engine.getState().getCurrentCategory())
+                        .setQuestionValue(engine.getState().getCurrentQuestion().getValue())
+                        .setQuestion(question)
+                        .setTurn(engine.getState().getCurrentTurn() + 1)
+                        .setScoreAfterPlay(engine.getState().getCurrentPlayer().getCurrentScore())
+                        .setAnswerGiven(choice)
+                        .createActivityLog()
+            );
         } else {
             System.out.println("Incorrect. The correct answer is " + question.getCorrectAnswer());
+
+            engine.setCurrentActivityLog(
+                new ActivityLogBuilder()
+                        .setCaseId("GAME-001")
+                        .setPlayerId(engine.getState().getCurrentPlayer())
+                        .setActivity(ActivityType.ANSWER_QUESTION)
+                        .setTimestamp()
+                        .setResult("Incorrect")
+                        .setCategory(engine.getState().getCurrentCategory())
+                        .setQuestionValue(engine.getState().getCurrentQuestion().getValue())
+                        .setTurn(engine.getState().getCurrentTurn() + 1)
+                        .setQuestion(question)
+                        .setScoreAfterPlay(engine.getState().getCurrentPlayer().getCurrentScore())
+                        .setAnswerGiven(choice)
+                        .createActivityLog()
+            );
         }
+
+        engine.notifySubscribers();
     }
 }

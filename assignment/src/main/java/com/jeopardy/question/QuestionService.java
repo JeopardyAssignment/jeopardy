@@ -115,10 +115,10 @@ public class QuestionService {
      * @param loader the QuestionLoader implementation to use for parsing the file
      * @param filename the path to the file containing questions
      */
-    public void setQuestions(QuestionLoader loader, String filename) {
+    public boolean setQuestions(QuestionLoader loader, String filename) {
         if (loader == null) {
             this.questions = new ArrayList<>();
-            return;
+            return false;
         }
 
         try {
@@ -127,10 +127,12 @@ public class QuestionService {
                 loaded = new ArrayList<>();
             }
             this.questions = new ArrayList<>(loaded);
+            return true;
         } catch (Exception e) {
             System.out.println("Error loading questions from: " + filename);
             e.printStackTrace();
             this.questions = new ArrayList<>();
+            return false;
         }
     }
 

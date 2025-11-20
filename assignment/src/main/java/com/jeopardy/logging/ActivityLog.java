@@ -88,6 +88,7 @@ public class ActivityLog {
      * @return a formatted string containing a human-readable summary of this activity
      */
     public String toSummaryString() {
+        if (question == null) return null;
         String line1 = String.format("Turn %d: %s selected %s for %d pts\n", this.turn, this.playerId, this.category, this.questionValue);
         
         String line2 = String.format("Question: %s\n", this.question.getQuestion());

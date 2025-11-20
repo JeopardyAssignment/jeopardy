@@ -88,17 +88,19 @@ public class DOCXReportFormat implements ReportFormat {
             // Add activity logs with same format as PDF
             for (ActivityLog log : data) {
                 String summary = log.toSummaryString();
-                String[] lines = summary.split("\n");
+                if (summary != null) {
+                    String[] lines = summary.split("\n");
                 
-                for (String line : lines) {
-                    if (line.trim().isEmpty()) continue;
+                    for (String line : lines) {
+                        if (line.trim().isEmpty()) continue;
+                        
+                        XWPFParagraph activityPara = document.createParagraph();
+                        activityPara.createRun().setText(line);
+                    }
                     
-                    XWPFParagraph activityPara = document.createParagraph();
-                    activityPara.createRun().setText(line);
+                    // Add spacing between activity blocks
+                    document.createParagraph();
                 }
-                
-                // Add spacing between activity blocks
-                document.createParagraph();
             }
             
             // Add final scores section

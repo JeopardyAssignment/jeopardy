@@ -66,8 +66,11 @@ public class TXTReportFormat implements ReportFormat {
             writer.write("-----------------\n");
             
             for (ActivityLog log : data) {
-                writer.write(log.toSummaryString());
-                writer.write("\n");
+                String text = log.toSummaryString();
+                if (text != null) {
+                    writer.write(text);
+                    writer.write("\n\n");
+                }
             }
             
             // Write final scores

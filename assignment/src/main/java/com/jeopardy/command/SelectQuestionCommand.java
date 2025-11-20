@@ -1,6 +1,8 @@
 package com.jeopardy.command;
 
 import com.jeopardy.game.GameEngine;
+import com.jeopardy.logging.ActivityLogBuilder;
+import com.jeopardy.utils.ActivityType;
 
 /**
  * SelectQuestionCommand encapsulates the action of selecting a question in the Jeopardy game.
@@ -31,5 +33,20 @@ public class SelectQuestionCommand implements Command {
     @Override
     public void execute() {
         engine.selectQuestion();
+
+        engine.setCurrentActivityLog(
+            new ActivityLogBuilder()
+                    .setCaseId("GAME-001")
+                    .setPlayerId(engine.getState().getCurrentPlayer())
+                    .setActivity(ActivityType.SELECT_QUESTION)
+                    .setTimestamp()
+                    .setCategory(engine.getState().getCurrentCategory())
+                    .setTurn(engine.getState().getCurrentTurn() + 1)
+                    .setQuestionValue(engine.getState().getCurrentQuestion().getValue())
+                    .setScoreAfterPlay(engine.getState().getCurrentPlayer().getCurrentScore())
+                    .createActivityLog()
+        );
+
+        engine.notifySubscribers();
     }
 }

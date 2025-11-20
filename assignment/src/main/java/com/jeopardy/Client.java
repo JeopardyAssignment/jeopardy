@@ -1,7 +1,14 @@
 package com.jeopardy;
 
+import java.io.IOException;
+
 import com.jeopardy.game.GameEngine;
 import com.jeopardy.question.Question;
+import com.jeopardy.report.ReportGenerator;
+import com.jeopardy.report.format.CSVReportFormat;
+import com.jeopardy.report.format.DOCXReportFormat;
+import com.jeopardy.report.format.PDFReportFormat;
+import com.jeopardy.report.format.TXTReportFormat;
 
 /**
  * Client is the main entry point for the Jeopardy game application.
@@ -10,9 +17,20 @@ public class Client {
     private static GameEngine gameEngine;
     
     public static void main(String[] args) {
-        gameEngine = GameEngine.Instance();
-        gameEngine.start();
+        ReportGenerator reportGenerator = new ReportGenerator();
 
+        gameEngine = GameEngine.Instance();
+        gameEngine.subscribe(reportGenerator);
+        gameEngine.subscribePlayersTo(reportGenerator);
+
+        // Add shutdown hook to handle Ctrl+C gracefully
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("\n\nGame Quit. Generating final reports...");
+            gameEngine.onGameOver();
+            generateReports(reportGenerator);
+        }));
+
+        gameEngine.start();
     }
 
     /**
@@ -26,6 +44,50 @@ public class Client {
 
     public static void newLine() {
         System.out.println();
+    }
+    
+    
+    public static void await() {
+        try {
+            System.out.println("\nPress any key to continue...\n");
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Generates reports in multiple formats (CSV and TXT) when the game ends.
+     * Creates an output directory if it doesn't exist and saves the reports there.
+     *
+     * @param reportGenerator the ReportGenerator containing collected activity logs
+     */
+    private static void generateReports(ReportGenerator reportGenerator) {
+        try {
+            // Generate CSV report
+            reportGenerator.setFormat(new CSVReportFormat());
+            reportGenerator.createReport();
+            System.out.println("CSV report generated successfully.");
+
+            // Generate TXT report
+            reportGenerator.setFormat(new TXTReportFormat());
+            reportGenerator.createReport();
+            System.out.println("TXT report generated successfully.");
+
+            // Generate DOCX report
+            reportGenerator.setFormat(new DOCXReportFormat());
+            reportGenerator.createReport();
+            System.out.println("DOCX report generated successfully.");
+            
+            reportGenerator.setFormat(new PDFReportFormat());
+            reportGenerator.createReport();
+            System.out.println("PDF report generated successfully.");
+
+            System.out.println("\nReports saved to output/ directory.");
+        } catch (Exception e) {
+            System.err.println("Error generating reports: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**

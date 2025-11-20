@@ -1,6 +1,8 @@
 package com.jeopardy.command;
 
 import com.jeopardy.game.GameEngine;
+import com.jeopardy.logging.ActivityLogBuilder;
+import com.jeopardy.utils.ActivityType;
 
 /**
  * SelectCategoryCommand encapsulates the action of selecting a category in the Jeopardy game.
@@ -31,5 +33,19 @@ public class SelectCategoryCommand implements Command {
     @Override
     public void execute() {
         this.engine.selectCategory();
+
+        engine.setCurrentActivityLog(
+            new ActivityLogBuilder()
+                    .setCaseId("GAME-001")
+                    .setPlayerId(engine.getState().getCurrentPlayer())
+                    .setActivity(ActivityType.SELECT_CATEGORY)
+                    .setTimestamp()
+                    .setCategory(engine.getState().getCurrentCategory())
+                    .setTurn(engine.getState().getCurrentTurn() + 1)
+                    .setScoreAfterPlay(engine.getState().getCurrentPlayer().getCurrentScore())
+                    .createActivityLog()
+        );
+
+        engine.notifySubscribers();
     }
 }
