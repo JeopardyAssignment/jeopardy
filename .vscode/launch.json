@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Client",
+            "request": "launch",
+            "mainClass": "com.jeopardy.Client",
+            "projectName": "assignment"
+        },
+        {
+            "name": "Run App",
+            "type": "java",
+            "request": "launch",
+            "mainClass": "com.jeopardy.App",
+            "projectName": "assignment",
+            "cwd": "${workspaceFolder}/assignment",
+            "console": "integratedTerminal",
+            "preLaunchTask": "Maven: clean compile"
+        }
+    ]
+}
