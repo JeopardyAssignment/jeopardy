@@ -7,6 +7,7 @@ import com.jeopardy.question.loader.QuestionLoader;
 import com.jeopardy.question.loader.CSVQuestionLoader;
 import com.jeopardy.question.loader.JSONQuestionLoader;
 import com.jeopardy.question.loader.XMLQuestionLoader;
+import com.jeopardy.utils.GameConstants;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -149,6 +150,7 @@ public class GameState {
     /**
      * Prompts for file type and loads questions into the question service.
      * Uses a registry-based approach to select the appropriate loader (Strategy pattern).
+     * Uses Path API for cross-platform file access.
      *
      * @param scanner the Scanner instance to use for input
      * @return true if questions loaded successfully, false otherwise
@@ -158,7 +160,9 @@ public class GameState {
         int optionIndex = Client.prompt("What file type do you wish to load the game data with? ", options, scanner);
 
         int arrayIndex = optionIndex - 1;
-        String fileName = String.format("data/sample_game_%s.%s", options[arrayIndex], options[arrayIndex].toLowerCase());
+        String fileName = GameConstants.DATA_DIRECTORY.resolve(
+            String.format("sample_game_%s.%s", options[arrayIndex], options[arrayIndex].toLowerCase())
+        ).toString();
 
         QuestionLoader questionLoader = loaderRegistry.get(optionIndex);
 

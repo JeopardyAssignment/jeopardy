@@ -1,5 +1,8 @@
 package com.jeopardy.utils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * GameConstants contains all constant values used throughout the Jeopardy game.
  *
@@ -42,18 +45,21 @@ public final class GameConstants {
 
     /**
      * Directory containing question data files.
+     * Uses Path API for cross-platform compatibility.
      */
-    public static final String DATA_DIRECTORY = "data/";
+    public static final Path DATA_DIRECTORY = Paths.get("data");
 
     /**
      * Directory for output reports.
+     * Uses Path API for cross-platform compatibility.
      */
-    public static final String OUTPUT_DIRECTORY = "output/";
+    public static final Path OUTPUT_DIRECTORY = Paths.get("output");
 
     /**
      * Path to the banner file.
+     * Uses Path API for cross-platform compatibility.
      */
-    public static final String BANNER_FILE = "./banner.txt";
+    public static final Path BANNER_FILE = Paths.get("banner.txt");
 
     // ==================== Turn Offset ====================
 

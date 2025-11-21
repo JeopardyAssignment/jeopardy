@@ -1,7 +1,7 @@
 {
     "version": "1.0",
     "scripts": {
-        "start": "cd ./assignment && mvn exec:java -Dexec.mainClass='com.jeopardy.Client'",
+        "start": "cd ./assignment && mvn exec:java -Dexec.mainClass=com.jeopardy.Client",
         "test": "cd ./assignment && mvn test"
     }
 }

@@ -1,0 +1,417 @@
+@startuml Jeopardy Game System
+
+' Design Patterns Legend
+legend top right
+  **Design Patterns Used:**
+  - Singleton: GameEngine
+  - Command: Player actions
+  - Observer: Activity logging
+  - Strategy: Question loaders & Report formats
+  - Builder: ActivityLogBuilder
+endlegend
+
+' Main Package
+package "com.jeopardy" {
+  class Client {
+    - {static} gameEngine : GameEngine
+    + {static} main(args : String[]) : void
+    + {static} prompt(message : String, options : String[], scanner : Scanner) : int
+    + {static} prompt(question : Question, scanner : Scanner) : String
+    - {static} generateReports(reportGenerator : ReportGenerator) : void
+    + {static} clear() : void
+    + {static} newLine() : void
+    + {static} await() : void
+    + {static} showBanner() : void
+  }
+}
+
+' Game Package
+package "com.jeopardy.game" {
+  interface GameController {
+    + getState() : GameState
+    + selectCategory() : void
+    + selectQuestion() : void
+    + updateCurrentPlayerScore(points : int) : void
+    + setCurrentActivityLog(log : ActivityLog) : void
+    + notifySubscribers() : void
+  }
+
+  class GameEngine <<Singleton>> {
+    - {static} instance : GameEngine
+    - scanner : Scanner
+    - state : GameState
+    - activityPublisher : ActivityPublisher
+    - activityLogBuilder : ActivityLogBuilder
+    - isGameOver : boolean
+
+    - GameEngine()
+    + {static} Instance() : GameEngine
+    + getState() : GameState
+    + isGameOver() : boolean
+    + updateCurrentPlayerScore(s : int) : void
+    + onTurnStart() : void
+    + onTurnEnd() : void
+    + onGameOver() : void
+    + onGameStart() : void
+    + onFileLoad(state : String) : void
+    + selectCategory() : void
+    + selectQuestion() : void
+    + start() : void
+    + update() : void
+    + subscribe(s : Subscriber) : void
+    + unsubscribe(s : Subscriber) : void
+    + notifySubscribers() : void
+    + subscribePlayersTo(s : Subscriber) : void
+  }
+
+  class GameState {
+    - currentTurn : int
+    - players : ArrayList<Player>
+    - questionService : QuestionService
+    - currentCategory : String
+    - currentQuestion : Question
+    - loaderRegistry : Map<Integer, QuestionLoader>
+
+    + getCurrentTurn() : int
+    + nextTurn() : void
+    + getPlayers() : ArrayList<Player>
+    + setPlayers(scanner : Scanner) : void
+    + getCurrentPlayer() : Player
+    + getQuestionService() : QuestionService
+    + setQuestionService(scanner : Scanner) : boolean
+    + getCurrentCategory() : String
+    + setCurrentCategory(scanner : Scanner) : String
+    + getCategories() : ArrayList<String>
+    + getCurrentQuestion() : Question
+    + setCurrentQuestion(scanner : Scanner) : Question
+  }
+
+  class Player {
+    - id : String
+    - command : Command
+    - subscribers : ArrayList<Subscriber>
+    - currentScore : int
+
+    + getId() : String
+    + getCurrentScore() : int
+    + updateCurrentScore(s : int) : void
+    + setCommand(command : Command) : void
+    + doCommand() : void
+    + subscribe(s : Subscriber) : void
+    + unsubscribe(s : Subscriber) : void
+    + notifySubscribers() : void
+    + toString() : String
+  }
+}
+
+' Command Package
+package "com.jeopardy.command" {
+  interface Command {
+    + execute() : void
+  }
+
+  class SelectCategoryCommand {
+    - gameController : GameController
+    + execute() : void
+  }
+
+  class SelectQuestionCommand {
+    - gameController : GameController
+    + execute() : void
+  }
+
+  class AnswerQuestionCommand {
+    - gameController : GameController
+    - answer : String
+    + execute() : void
+  }
+}
+
+' Question Package
+package "com.jeopardy.question" {
+  class Question {
+    - category : String
+    - question : String
+    - value : int
+    - correctAnswer : String
+    - options : Map<String, String>
+    - isAnswered : boolean
+
+    + getCategory() : String
+    + setCategory(category : String) : void
+    + getQuestion() : String
+    + setQuestion(question : String) : void
+    + getValue() : int
+    + setValue(value : int) : void
+    + getCorrectAnswer() : String
+    + setCorrectAnswer(correctAnswer : String) : void
+    + getIsAnswered() : boolean
+    + setIsAnswered(isAnswered : boolean) : void
+    + evaluate(answer : String) : boolean
+    + getOptions() : Map<String, String>
+    + setOptions(options : String[]) : void
+    + setOptions(options : ArrayList<String>) : void
+    + toString() : String
+    + promptString() : String
+  }
+
+  class QuestionService {
+    - questions : ArrayList<Question>
+
+    + setQuestions(loader : QuestionLoader, filename : String) : boolean
+    + getQuestions() : ArrayList<Question>
+    + getQuestionsByCategory(category : String) : ArrayList<Question>
+    + getAnsweredQuestions() : ArrayList<Question>
+    + getUnansweredQuestions() : ArrayList<Question>
+    + getCategoryQuestionByValue(category : String, value : int) : Question
+    + getCategories() : ArrayList<String>
+    + getCategoryQuestionValues(category : String) : ArrayList<Integer>
+  }
+}
+
+' Question Loader Package
+package "com.jeopardy.question.loader" {
+  interface QuestionLoader <<Strategy>> {
+    + load(filename : String) : ArrayList<Question>
+  }
+
+  class CSVQuestionLoader {
+    + load(filename : String) : ArrayList<Question>
+  }
+
+  class JSONQuestionLoader {
+    + load(filename : String) : ArrayList<Question>
+  }
+
+  class XMLQuestionLoader {
+    + load(filename : String) : ArrayList<Question>
+  }
+}
+
+' Observer Package
+package "com.jeopardy.logging.observer" {
+  interface Publisher {
+    + subscribe(s : Subscriber) : void
+    + unsubscribe(s : Subscriber) : void
+    + notifySubscribers() : void
+  }
+
+  interface Subscriber {
+    + update(activity : ActivityLog) : void
+  }
+}
+
+' Logging Package
+package "com.jeopardy.logging" {
+  class ActivityLog {
+    - caseId : String
+    - playerId : String
+    - activity : ActivityType
+    - timestamp : Instant
+    - category : String
+    - questionValue : int
+    - answerGiven : String
+    - result : String
+    - scoreAfterPlay : int
+    - turn : int
+    - question : Question
+
+    + getCaseId() : String
+    + getPlayerId() : String
+    + getActivity() : ActivityType
+    + getTimestamp() : Instant
+    + getCategory() : String
+    + getQuestionValue() : int
+    + getAnswerGiven() : String
+    + getResult() : String
+    + getScoreAfterPlay() : int
+    + getTurn() : int
+    + getQuestion() : Question
+    + toSummaryString() : String
+    + toCSVString() : String
+  }
+
+  class ActivityLogBuilder <<Builder>> {
+    - activityLog : ActivityLog
+
+    + setCaseId(caseId : String) : ActivityLogBuilder
+    + setPlayerId(player : Player) : ActivityLogBuilder
+    + setPlayerId(playerId : String) : ActivityLogBuilder
+    + setActivity(activity : ActivityType) : ActivityLogBuilder
+    + setTimestamp() : ActivityLogBuilder
+    + setCategory(category : String) : ActivityLogBuilder
+    + setQuestionValue(value : int) : ActivityLogBuilder
+    + setAnswerGiven(answer : String) : ActivityLogBuilder
+    + setResult(result : String) : ActivityLogBuilder
+    + setScoreAfterPlay(score : int) : ActivityLogBuilder
+    + setTurn(turn : int) : ActivityLogBuilder
+    + setQuestion(question : Question) : ActivityLogBuilder
+    + createActivityLog() : ActivityLog
+    + reset() : void
+  }
+
+  class ActivityPublisher {
+    - subscribers : ArrayList<Subscriber>
+    - currentActivityLog : ActivityLog
+
+    + subscribe(s : Subscriber) : void
+    + unsubscribe(s : Subscriber) : void
+    + notifySubscribers() : void
+    + setCurrentActivityLog(log : ActivityLog) : void
+    + getSubscribers() : ArrayList<Subscriber>
+  }
+}
+
+' Report Package
+package "com.jeopardy.report" {
+  class ReportGenerator {
+    - format : ReportFormat
+    - data : ArrayList<ActivityLog>
+
+    + setFormat(r : ReportFormat) : ReportGenerator
+    + createReport() : void
+    + update(activity : ActivityLog) : void
+    + getActivityCount() : int
+    + clearData() : void
+  }
+}
+
+' Report Format Package
+package "com.jeopardy.report.format" {
+  interface ReportFormat <<Strategy>> {
+    + generate(data : ArrayList<ActivityLog>) : void
+    + generateFilename(format : String) : String
+  }
+
+  class CSVReportFormat {
+    + generate(data : ArrayList<ActivityLog>) : void
+  }
+
+  class TXTReportFormat {
+    + generate(data : ArrayList<ActivityLog>) : void
+  }
+
+  class PDFReportFormat {
+    + generate(data : ArrayList<ActivityLog>) : void
+  }
+
+  class DOCXReportFormat {
+    + generate(data : ArrayList<ActivityLog>) : void
+  }
+}
+
+' UI Package
+package "com.jeopardy.ui" {
+  class ConsoleUI {
+    + {static} clear() : void
+    + {static} newLine() : void
+    + {static} await() : void
+    + {static} showBanner() : void
+  }
+}
+
+' Utils Package
+package "com.jeopardy.utils" {
+  enum ActivityType {
+    START_GAME
+    LOAD_FILE
+    SELECT_PLAYER_COUNT
+    ENTER_PLAYER_NAME
+    SELECT_CATEGORY
+    SELECT_QUESTION
+    ANSWER_QUESTION
+    GAME_OVER
+  }
+
+  class GameConstants {
+    + {static} ERROR_INVALID_NUMBER : String
+    + {static} ERROR_OUT_OF_RANGE_FORMAT : String
+    + {static} ERROR_INVALID_ANSWER : String
+    + {static} MESSAGE_GAME_QUIT : String
+    + {static} MESSAGE_REPORTS_SAVED : String
+    + {static} RESULT_SUCCESS : String
+    + {static} RESULT_FAILED : String
+    + {static} DEFAULT_CASE_ID : String
+    + {static} SYSTEM_PLAYER_ID : String
+  }
+}
+
+' Exception Package
+package "com.jeopardy.exception" {
+  class GameException {
+  }
+
+  class InvalidPlayerCountException {
+  }
+
+  class QuestionLoadException {
+  }
+
+  class InvalidQuestionStateException {
+  }
+}
+
+' Relationships - Implements
+GameEngine ..|> GameController
+GameEngine ..|> Publisher
+Player ..|> Publisher
+ReportGenerator ..|> Subscriber
+ActivityPublisher ..|> Publisher
+
+SelectCategoryCommand ..|> Command
+SelectQuestionCommand ..|> Command
+AnswerQuestionCommand ..|> Command
+
+CSVQuestionLoader ..|> QuestionLoader
+JSONQuestionLoader ..|> QuestionLoader
+XMLQuestionLoader ..|> QuestionLoader
+
+CSVReportFormat ..|> ReportFormat
+TXTReportFormat ..|> ReportFormat
+PDFReportFormat ..|> ReportFormat
+DOCXReportFormat ..|> ReportFormat
+
+' Relationships - Composition/Aggregation
+Client --> GameEngine : uses
+Client --> ReportGenerator : creates
+Client --> ConsoleUI : uses
+
+GameEngine *-- GameState : contains
+GameEngine *-- ActivityPublisher : contains
+GameEngine *-- ActivityLogBuilder : contains
+GameEngine --> Player : manages
+
+GameState *-- QuestionService : contains
+GameState o-- Player : manages
+GameState --> QuestionLoader : uses
+GameState --> Question : tracks current
+
+Player *-- Command : executes
+Player o-- Subscriber : notifies
+
+QuestionService o-- Question : manages
+
+SelectCategoryCommand --> GameController : uses
+SelectQuestionCommand --> GameController : uses
+AnswerQuestionCommand --> GameController : uses
+
+ActivityPublisher o-- Subscriber : notifies
+ActivityPublisher --> ActivityLog : publishes
+
+ActivityLogBuilder --> ActivityLog : builds
+ActivityLogBuilder --> ActivityType : uses
+
+ReportGenerator --> ReportFormat : uses
+ReportGenerator o-- ActivityLog : collects
+
+QuestionService --> QuestionLoader : uses strategy
+
+ActivityLog --> Question : references
+ActivityLog --> ActivityType : uses
+
+' Exception Relationships
+InvalidPlayerCountException --|> GameException
+QuestionLoadException --|> GameException
+InvalidQuestionStateException --|> GameException
+
+@enduml

@@ -3,6 +3,7 @@ package com.jeopardy.question;
 import com.jeopardy.question.loader.CSVQuestionLoader;
 import com.jeopardy.question.loader.JSONQuestionLoader;
 import com.jeopardy.question.loader.XMLQuestionLoader;
+import com.jeopardy.utils.GameConstants;
 import org.junit.Test;
 import java.util.ArrayList;
 
@@ -17,7 +18,9 @@ public class QuestionTest {
     public void loadersAndServiceIntegration() {
 
         CSVQuestionLoader csvLoader = new CSVQuestionLoader();
-        ArrayList<Question> csvQuestions = csvLoader.load("data/sample_game_CSV.csv");
+        ArrayList<Question> csvQuestions = csvLoader.load(
+            GameConstants.DATA_DIRECTORY.resolve("sample_game_CSV.csv").toString()
+        );
         assertNotNull("CSV result should not be null", csvQuestions);
         assertTrue("CSV should load at least one question", csvQuestions.size() > 0);
         Question csvFirst = csvQuestions.get(0);
@@ -26,9 +29,11 @@ public class QuestionTest {
         assertNotNull(csvFirst.getOptions());
         assertNotNull(csvFirst.getCorrectAnswer());
 
-    
+
         JSONQuestionLoader jsonLoader = new JSONQuestionLoader();
-        ArrayList<Question> jsonQuestions = jsonLoader.load("data/sample_game_JSON.json");
+        ArrayList<Question> jsonQuestions = jsonLoader.load(
+            GameConstants.DATA_DIRECTORY.resolve("sample_game_JSON.json").toString()
+        );
         assertNotNull("JSON result should not be null", jsonQuestions);
         assertTrue("JSON should load at least one question", jsonQuestions.size() > 0);
         Question jsonFirst = jsonQuestions.get(0);
@@ -37,9 +42,11 @@ public class QuestionTest {
         assertNotNull(jsonFirst.getOptions());
         assertEquals("A", jsonFirst.getCorrectAnswer());
 
- 
+
         XMLQuestionLoader xmlLoader = new XMLQuestionLoader();
-        ArrayList<Question> xmlQuestions = xmlLoader.load("data/sample_game_XML.xml");
+        ArrayList<Question> xmlQuestions = xmlLoader.load(
+            GameConstants.DATA_DIRECTORY.resolve("sample_game_XML.xml").toString()
+        );
         assertNotNull("XML result should not be null", xmlQuestions);
         assertTrue("XML should load at least one question", xmlQuestions.size() > 0);
         Question xmlFirst = xmlQuestions.get(0);
@@ -62,9 +69,9 @@ public class QuestionTest {
         q3.setCorrectAnswer("B");
         assertFalse(q3.evaluate("A"));
 
-        
+
         QuestionService service = new QuestionService();
-        service.setQuestions(jsonLoader, "data/sample_game_JSON.json");
+        service.setQuestions(jsonLoader, GameConstants.DATA_DIRECTORY.resolve("sample_game_JSON.json").toString());
         ArrayList<Question> serviceList = service.getQuestions();
         assertNotNull(serviceList);
         assertTrue(serviceList.size() > 0);

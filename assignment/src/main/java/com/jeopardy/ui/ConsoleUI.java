@@ -58,9 +58,10 @@ public class ConsoleUI {
     /**
      * Displays the game banner from a file.
      * Reads the banner file line by line and prints to console.
+     * Uses Path API for cross-platform file access.
      */
     public static void showBanner() {
-        try (BufferedReader br = new BufferedReader(new FileReader(GameConstants.BANNER_FILE))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(GameConstants.BANNER_FILE.toFile()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 System.out.println(line);

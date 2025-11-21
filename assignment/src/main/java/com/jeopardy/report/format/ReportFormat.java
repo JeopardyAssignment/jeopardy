@@ -3,6 +3,7 @@ package com.jeopardy.report.format;
 import java.util.*;
 
 import com.jeopardy.logging.ActivityLog;
+import com.jeopardy.utils.GameConstants;
 
 /**
  * ReportFormat is an interface that defines the contract for generating reports in different formats.
@@ -34,14 +35,15 @@ public interface ReportFormat {
 
     /**
      * Generates a timestamped filename for the report.
-     * 
+     * Uses Path API for cross-platform compatibility.
+     *
      * @param format the file extension (e.g., "csv", "txt", "pdf", "docx")
      * @return a filename with the format: output/jeopardy_report_YYYYMMDD_HHmmss.{format}
      */
     public default String generateFilename(String format) {
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        return "output/jeopardy_report_" + now.format(formatter) + "." + format;
+        return GameConstants.OUTPUT_DIRECTORY.resolve("jeopardy_report_" + now.format(formatter) + "." + format).toString();
     }
 
 }

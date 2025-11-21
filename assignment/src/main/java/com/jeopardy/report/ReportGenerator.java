@@ -3,6 +3,7 @@ package com.jeopardy.report;
 import com.jeopardy.logging.observer.Subscriber;
 import com.jeopardy.report.format.ReportFormat;
 import com.jeopardy.logging.ActivityLog;
+import com.jeopardy.utils.GameConstants;
 
 import java.util.*;
 import java.io.File;
@@ -84,12 +85,13 @@ public class ReportGenerator implements Subscriber {
     /**
      * Ensures the output directory exists, creating it if necessary.
      * This prevents FileNotFoundException when saving report files.
+     * Uses Path API for cross-platform compatibility.
      */
     private void ensureOutputDirectory() {
-        File outputDir = new File("output");
+        File outputDir = GameConstants.OUTPUT_DIRECTORY.toFile();
         if (!outputDir.exists()) {
             if (outputDir.mkdirs()) {
-                System.out.println("Created output directory: output/");
+                System.out.println("Created output directory: " + GameConstants.OUTPUT_DIRECTORY);
             } else {
                 System.err.println("Failed to create output directory");
             }
