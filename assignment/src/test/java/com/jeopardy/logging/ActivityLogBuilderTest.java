@@ -49,7 +49,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Case ID should match", caseId, log.caseId);
+        Assert.assertEquals("Case ID should match", caseId, log.getCaseId());
     }
 
     /**
@@ -63,7 +63,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertNotNull("Player ID should not be null", log.playerId);
+        Assert.assertNotNull("Player ID should not be null", log.getPlayerId());
     }
 
     /**
@@ -77,7 +77,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Activity type should match", activity, log.activity);
+        Assert.assertEquals("Activity type should match", activity, log.getActivity());
     }
 
     /**
@@ -92,7 +92,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Category should match", category, log.category);
+        Assert.assertEquals("Category should match", category, log.getCategory());
     }
 
     /**
@@ -107,7 +107,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Question value should match", value, log.questionValue);
+        Assert.assertEquals("Question value should match", value, log.getQuestionValue());
     }
 
     /**
@@ -122,7 +122,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Answer given should match", answer, log.answerGiven);
+        Assert.assertEquals("Answer given should match", answer, log.getAnswerGiven());
     }
 
     /**
@@ -137,7 +137,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Result should match", result, log.result);
+        Assert.assertEquals("Result should match", result, log.getResult());
     }
 
     /**
@@ -152,7 +152,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Score after play should match", score, log.scoreAfterPlay);
+        Assert.assertEquals("Score after play should match", score, log.getScoreAfterPlay());
     }
 
     /**
@@ -167,7 +167,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Turn should match", turn, log.turn);
+        Assert.assertEquals("Turn should match", turn, log.getTurn());
     }
 
     /**
@@ -181,7 +181,7 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Question should match", mockQuestion, log.question);
+        Assert.assertEquals("Question should match", mockQuestion, log.getQuestion());
     }
 
     /**
@@ -196,10 +196,10 @@ public class ActivityLogBuilderTest {
             .createActivityLog();
         Instant after = Instant.now();
         
-        Assert.assertNotNull("Timestamp should not be null", log.timestamp);
+        Assert.assertNotNull("Timestamp should not be null", log.getTimestamp());
         Assert.assertTrue("Timestamp should be recent", 
-            log.timestamp.isAfter(before.minusSeconds(1)) && 
-            log.timestamp.isBefore(after.plusSeconds(1)));
+            log.getTimestamp().isAfter(before.minusSeconds(1)) && 
+            log.getTimestamp().isBefore(after.plusSeconds(1)));
     }
 
     /**
@@ -221,15 +221,15 @@ public class ActivityLogBuilderTest {
             .setTimestamp()
             .createActivityLog();
         
-        Assert.assertEquals("Case ID should match", "case-001", log.caseId);
-        Assert.assertEquals("Activity should match", ActivityType.ANSWER_QUESTION, log.activity);
-        Assert.assertEquals("Category should match", "Science", log.category);
-        Assert.assertEquals("Question value should match", 300, log.questionValue);
-        Assert.assertEquals("Answer should match", "Mitochondria", log.answerGiven);
-        Assert.assertEquals("Result should match", "Correct", log.result);
-        Assert.assertEquals("Score should match", 1500, log.scoreAfterPlay);
-        Assert.assertEquals("Turn should match", 3, log.turn);
-        Assert.assertEquals("Question should match", mockQuestion, log.question);
+        Assert.assertEquals("Case ID should match", "case-001", log.getCaseId());
+        Assert.assertEquals("Activity should match", ActivityType.ANSWER_QUESTION, log.getActivity());
+        Assert.assertEquals("Category should match", "Science", log.getCategory());
+        Assert.assertEquals("Question value should match", 300, log.getQuestionValue());
+        Assert.assertEquals("Answer should match", "Mitochondria", log.getAnswerGiven());
+        Assert.assertEquals("Result should match", "Correct", log.getResult());
+        Assert.assertEquals("Score should match", 1500, log.getScoreAfterPlay());
+        Assert.assertEquals("Turn should match", 3, log.getTurn());
+        Assert.assertEquals("Question should match", mockQuestion, log.getQuestion());
     }
 
     /**
@@ -260,14 +260,14 @@ public class ActivityLogBuilderTest {
             .createActivityLog();
         
         // Verify that most fields are cleared (null or 0)
-        Assert.assertNull("Case ID should be null after reset", log.caseId);
-        Assert.assertNull("Player ID should be null after reset", log.playerId);
-        Assert.assertEquals("Question value should be 0 after reset", 0, log.questionValue);
-        Assert.assertNull("Answer given should be null after reset", log.answerGiven);
-        Assert.assertNull("Result should be null after reset", log.result);
-        Assert.assertEquals("Score should be 0 after reset", 0, log.scoreAfterPlay);
-        Assert.assertNull("Question should be null after reset", log.question);
-        Assert.assertEquals("Turn should be 0 after reset", 0, log.turn);
+        Assert.assertNull("Case ID should be null after reset", log.getCaseId());
+        Assert.assertNull("Player ID should be null after reset", log.getPlayerId());
+        Assert.assertEquals("Question value should be 0 after reset", 0, log.getQuestionValue());
+        Assert.assertNull("Answer given should be null after reset", log.getAnswerGiven());
+        Assert.assertNull("Result should be null after reset", log.getResult());
+        Assert.assertEquals("Score should be 0 after reset", 0, log.getScoreAfterPlay());
+        Assert.assertNull("Question should be null after reset", log.getQuestion());
+        Assert.assertEquals("Turn should be 0 after reset", 0, log.getTurn());
     }
 
     /**
@@ -281,7 +281,7 @@ public class ActivityLogBuilderTest {
             .setActivity(ActivityType.ANSWER_QUESTION)
             .setTimestamp()
             .createActivityLog();
-        Assert.assertEquals("First log case ID", "case-001", log1.caseId);
+        Assert.assertEquals("First log case ID", "case-001", log1.getCaseId());
         
         // Reset
         builder.reset();
@@ -292,8 +292,8 @@ public class ActivityLogBuilderTest {
             .setActivity(ActivityType.SELECT_CATEGORY)
             .setTimestamp()
             .createActivityLog();
-        Assert.assertEquals("Second log case ID", "case-002", log2.caseId);
-        Assert.assertEquals("Second log activity", ActivityType.SELECT_CATEGORY, log2.activity);
+        Assert.assertEquals("Second log case ID", "case-002", log2.getCaseId());
+        Assert.assertEquals("Second log activity", ActivityType.SELECT_CATEGORY, log2.getActivity());
     }
 
     /**
@@ -317,15 +317,15 @@ public class ActivityLogBuilderTest {
         
         // Verify all fields are correctly set
         Assert.assertNotNull("ActivityLog should not be null", log);
-        Assert.assertEquals("Case ID", "game-2025-11-07", log.caseId);
-        Assert.assertEquals("Activity", ActivityType.ANSWER_QUESTION, log.activity);
-        Assert.assertEquals("Category", "History", log.category);
-        Assert.assertEquals("Question value", 400, log.questionValue);
-        Assert.assertEquals("Answer given", "1776", log.answerGiven);
-        Assert.assertEquals("Result", "Correct", log.result);
-        Assert.assertEquals("Score after play", 2400, log.scoreAfterPlay);
-        Assert.assertEquals("Turn", 8, log.turn);
-        Assert.assertNotNull("Timestamp", log.timestamp);
-        Assert.assertEquals("Question", mockQuestion, log.question);
+        Assert.assertEquals("Case ID", "game-2025-11-07", log.getCaseId());
+        Assert.assertEquals("Activity", ActivityType.ANSWER_QUESTION, log.getActivity());
+        Assert.assertEquals("Category", "History", log.getCategory());
+        Assert.assertEquals("Question value", 400, log.getQuestionValue());
+        Assert.assertEquals("Answer given", "1776", log.getAnswerGiven());
+        Assert.assertEquals("Result", "Correct", log.getResult());
+        Assert.assertEquals("Score after play", 2400, log.getScoreAfterPlay());
+        Assert.assertEquals("Turn", 8, log.getTurn());
+        Assert.assertNotNull("Timestamp", log.getTimestamp());
+        Assert.assertEquals("Question", mockQuestion, log.getQuestion());
     }
 }

@@ -39,25 +39,25 @@ public class commandTest {
 
     @Test
     public void testSelectQuestionCommand() {
-        SelectQuestionCommand command = new SelectQuestionCommand();
+        SelectQuestionCommand command = new SelectQuestionCommand(GameEngine.Instance());
         Assert.assertNotNull("Command should be created without error", command);
     }
 
     @Test
     public void testAnswerQuestionCommandCorrect() {
-        AnswerQuestionCommand command = new AnswerQuestionCommand("4");
+        AnswerQuestionCommand command = new AnswerQuestionCommand(GameEngine.Instance(), "4");
         Assert.assertNotNull(command);
     }
 
     @Test
     public void testAnswerQuestionCommandIncorrect() {
-        AnswerQuestionCommand command = new AnswerQuestionCommand("5");
+        AnswerQuestionCommand command = new AnswerQuestionCommand(GameEngine.Instance(), "5");
         Assert.assertNotNull(command);
     }
 
     @Test
     public void testPlayerCommandExecution() {
-        SelectQuestionCommand command = new SelectQuestionCommand();
+        SelectQuestionCommand command = new SelectQuestionCommand(GameEngine.Instance());
         Assert.assertNotNull(command);
         player1.setCommand(command);
         // Don't execute the command as it requires Scanner input

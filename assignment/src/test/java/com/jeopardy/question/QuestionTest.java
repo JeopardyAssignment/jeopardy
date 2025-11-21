@@ -48,12 +48,19 @@ public class QuestionTest {
         assertNotNull(xmlFirst.getOptions());
         assertNotNull(xmlFirst.getCorrectAnswer());
 
-     
-        Question q = new Question();
-        q.setCorrectAnswer("B");
-        assertTrue(q.evaluate("B"));
-        assertTrue(q.evaluate("b"));
-        assertFalse(q.evaluate("A"));
+
+        // Test case sensitivity with separate Question instances (evaluate can only be called once per question)
+        Question q1 = new Question();
+        q1.setCorrectAnswer("B");
+        assertTrue(q1.evaluate("B"));
+
+        Question q2 = new Question();
+        q2.setCorrectAnswer("B");
+        assertTrue(q2.evaluate("b"));
+
+        Question q3 = new Question();
+        q3.setCorrectAnswer("B");
+        assertFalse(q3.evaluate("A"));
 
         
         QuestionService service = new QuestionService();

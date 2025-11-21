@@ -58,15 +58,15 @@ public class DOCXReportFormat implements ReportFormat {
             titleRun.setFontSize(18);
             
             // Add case ID
-            String caseId = data.get(0).caseId != null ? data.get(0).caseId : "UNKNOWN";
+            String caseId = data.get(0).getCaseId() != null ? data.get(0).getCaseId() : "UNKNOWN";
             XWPFParagraph caseInfo = document.createParagraph();
             caseInfo.createRun().setText("Case ID: " + caseId);
             
             // Extract unique players
             Set<String> players = new LinkedHashSet<>();
             for (ActivityLog log : data) {
-                if (log.playerId != null && log.playerId != "System") {
-                    players.add(log.playerId);
+                if (log.getPlayerId() != null && log.getPlayerId() != "System") {
+                    players.add(log.getPlayerId());
                 }
             }
             
@@ -113,8 +113,8 @@ public class DOCXReportFormat implements ReportFormat {
             // Extract final scores
             Map<String, Integer> finalScores = new LinkedHashMap<>();
             for (ActivityLog log : data) {
-                if (log.playerId != null && log.playerId != "System") {
-                    finalScores.put(log.playerId, log.scoreAfterPlay);
+                if (log.getPlayerId() != null && log.getPlayerId() != "System") {
+                    finalScores.put(log.getPlayerId(), log.getScoreAfterPlay());
                 }
             }
 

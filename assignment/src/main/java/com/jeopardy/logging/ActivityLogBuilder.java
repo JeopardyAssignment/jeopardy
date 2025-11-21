@@ -230,18 +230,18 @@ public class ActivityLogBuilder {
      */
     public ActivityLog createActivityLog() {
         ActivityLog log = new ActivityLog();
-        
-        log.answerGiven = this.answerGiven;
-        log.caseId = this.caseId;
-        log.playerId = this.playerId;
-        log.question = this.question;
-        log.questionValue = this.questionValue;
-        log.result = this.result;
-        log.timestamp = this.timestamp;
-        log.scoreAfterPlay = this.scoreAfterPlay;
-        log.turn = this.turn;
-        log.activity = this.activity;
-        log.category = this.category;
+
+        log.setAnswerGiven(this.answerGiven);
+        log.setCaseId(this.caseId);
+        log.setPlayerId(this.playerId);
+        log.setQuestion(this.question);
+        log.setQuestionValue(this.questionValue);
+        log.setResult(this.result);
+        log.setTimestamp(this.timestamp);
+        log.setScoreAfterPlay(this.scoreAfterPlay);
+        log.setTurn(this.turn);
+        log.setActivity(this.activity);
+        log.setCategory(this.category);
 
         return log;
     }

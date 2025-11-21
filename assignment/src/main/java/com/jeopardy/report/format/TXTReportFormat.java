@@ -46,14 +46,14 @@ public class TXTReportFormat implements ReportFormat {
             writer.write("================================\n\n");
             
             // Extract and write case ID
-            String caseId = data.get(0).caseId != null ? data.get(0).caseId : "UNKNOWN";
+            String caseId = data.get(0).getCaseId() != null ? data.get(0).getCaseId() : "UNKNOWN";
             writer.write("Case ID: " + caseId + "\n\n");
             
             // Extract unique players and write them
             Set<String> players = new LinkedHashSet<>();
             for (ActivityLog log : data) {
-                if (log.playerId != null) {
-                    players.add(log.playerId);
+                if (log.getPlayerId() != null) {
+                    players.add(log.getPlayerId());
                 }
             }
             
@@ -77,8 +77,8 @@ public class TXTReportFormat implements ReportFormat {
             writer.write("\nFinal Scores:\n");
             Map<String, Integer> finalScores = new LinkedHashMap<>();
             for (ActivityLog log : data) {
-                if (log.playerId != null && log.playerId != "System") {
-                    finalScores.put(log.playerId, log.scoreAfterPlay);
+                if (log.getPlayerId() != null && log.getPlayerId() != "System") {
+                    finalScores.put(log.getPlayerId(), log.getScoreAfterPlay());
                 }
             }
 

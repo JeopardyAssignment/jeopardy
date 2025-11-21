@@ -32,17 +32,17 @@ public class ActivityLogTest {
         testTimestamp = Instant.now();
         
         // Set up common test data
-        activityLog.caseId = "case-001";
-        activityLog.playerId = "player1";
-        activityLog.activity = ActivityType.ANSWER_QUESTION;
-        activityLog.timestamp = testTimestamp;
-        activityLog.category = "Science";
-        activityLog.questionValue = 200;
-        activityLog.answerGiven = "A";
-        activityLog.result = "Correct";
-        activityLog.scoreAfterPlay = 1200;
-        activityLog.turn = 3;
-        activityLog.question = mockQuestion;
+        activityLog.setCaseId("case-001");
+        activityLog.setPlayerId("player1");
+        activityLog.setActivity(ActivityType.ANSWER_QUESTION);
+        activityLog.setTimestamp(testTimestamp);
+        activityLog.setCategory("Science");
+        activityLog.setQuestionValue(200);
+        activityLog.setAnswerGiven("A");
+        activityLog.setResult("Correct");
+        activityLog.setScoreAfterPlay(1200);
+        activityLog.setTurn(3);
+        activityLog.setQuestion(mockQuestion);
     }
 
     /**
@@ -50,7 +50,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testCaseIdField() {
-        Assert.assertEquals("Case ID should be stored correctly", "case-001", activityLog.caseId);
+        Assert.assertEquals("Case ID should be stored correctly", "case-001", activityLog.getCaseId());
     }
 
     /**
@@ -58,7 +58,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testPlayerIdField() {
-        Assert.assertEquals("Player ID should be stored correctly", "player1", activityLog.playerId);
+        Assert.assertEquals("Player ID should be stored correctly", "player1", activityLog.getPlayerId());
     }
 
     /**
@@ -67,7 +67,7 @@ public class ActivityLogTest {
     @Test
     public void testActivityField() {
         Assert.assertEquals("Activity should be stored correctly", 
-            ActivityType.ANSWER_QUESTION, activityLog.activity);
+            ActivityType.ANSWER_QUESTION, activityLog.getActivity());
     }
 
     /**
@@ -75,7 +75,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testTimestampField() {
-        Assert.assertEquals("Timestamp should be stored correctly", testTimestamp, activityLog.timestamp);
+        Assert.assertEquals("Timestamp should be stored correctly", testTimestamp, activityLog.getTimestamp());
     }
 
     /**
@@ -83,7 +83,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testCategoryField() {
-        Assert.assertEquals("Category should be stored correctly", "Science", activityLog.category);
+        Assert.assertEquals("Category should be stored correctly", "Science", activityLog.getCategory());
     }
 
     /**
@@ -91,7 +91,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testQuestionValueField() {
-        Assert.assertEquals("Question value should be stored correctly", 200, activityLog.questionValue);
+        Assert.assertEquals("Question value should be stored correctly", 200, activityLog.getQuestionValue());
     }
 
     /**
@@ -99,7 +99,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testAnswerGivenField() {
-        Assert.assertEquals("Answer given should be stored correctly", "A", activityLog.answerGiven);
+        Assert.assertEquals("Answer given should be stored correctly", "A", activityLog.getAnswerGiven());
     }
 
     /**
@@ -107,7 +107,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testResultField() {
-        Assert.assertEquals("Result should be stored correctly", "Correct", activityLog.result);
+        Assert.assertEquals("Result should be stored correctly", "Correct", activityLog.getResult());
     }
 
     /**
@@ -115,7 +115,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testScoreAfterPlayField() {
-        Assert.assertEquals("Score after play should be stored correctly", 1200, activityLog.scoreAfterPlay);
+        Assert.assertEquals("Score after play should be stored correctly", 1200, activityLog.getScoreAfterPlay());
     }
 
     /**
@@ -123,7 +123,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testTurnField() {
-        Assert.assertEquals("Turn should be stored correctly", 3, activityLog.turn);
+        Assert.assertEquals("Turn should be stored correctly", 3, activityLog.getTurn());
     }
 
     /**
@@ -131,7 +131,7 @@ public class ActivityLogTest {
      */
     @Test
     public void testQuestionField() {
-        Assert.assertEquals("Question should be stored correctly", mockQuestion, activityLog.question);
+        Assert.assertEquals("Question should be stored correctly", mockQuestion, activityLog.getQuestion());
     }
 
     /**
@@ -226,14 +226,14 @@ public class ActivityLogTest {
      */
     @Test
     public void testToCSVStringWithDifferentValues() {
-        activityLog.caseId = "game-123";
-        activityLog.playerId = "bob";
-        activityLog.activity = ActivityType.SELECT_CATEGORY;
-        activityLog.category = "History";
-        activityLog.questionValue = 300;
-        activityLog.answerGiven = "B";
-        activityLog.result = "Incorrect";
-        activityLog.scoreAfterPlay = 900;
+        activityLog.setCaseId("game-123");
+        activityLog.setPlayerId("bob");
+        activityLog.setActivity(ActivityType.SELECT_CATEGORY);
+        activityLog.setCategory("History");
+        activityLog.setQuestionValue(300);
+        activityLog.setAnswerGiven("B");
+        activityLog.setResult("Incorrect");
+        activityLog.setScoreAfterPlay(900);
         
         String csv = activityLog.toCSVString();
         
@@ -252,11 +252,11 @@ public class ActivityLogTest {
      */
     @Test
     public void testActivityLogWithEdgeCaseValues() {
-        activityLog.caseId = "";
-        activityLog.playerId = "";
-        activityLog.questionValue = 0;
-        activityLog.scoreAfterPlay = 0;
-        activityLog.turn = 1;
+        activityLog.setCaseId("");
+        activityLog.setPlayerId("");
+        activityLog.setQuestionValue(0);
+        activityLog.setScoreAfterPlay(0);
+        activityLog.setTurn(1);
         
         String csv = activityLog.toCSVString();
         Assert.assertNotNull("CSV should handle empty strings and zero values", csv);
@@ -268,9 +268,9 @@ public class ActivityLogTest {
      */
     @Test
     public void testActivityLogWithMaximumValues() {
-        activityLog.questionValue = 500;
-        activityLog.scoreAfterPlay = Integer.MAX_VALUE;
-        activityLog.turn = Integer.MAX_VALUE;
+        activityLog.setQuestionValue(500);
+        activityLog.setScoreAfterPlay(Integer.MAX_VALUE);
+        activityLog.setTurn(Integer.MAX_VALUE);
         
         String csv = activityLog.toCSVString();
         Assert.assertNotNull("CSV should handle maximum values", csv);

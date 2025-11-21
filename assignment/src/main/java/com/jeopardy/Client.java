@@ -1,8 +1,5 @@
 package com.jeopardy;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import com.jeopardy.game.GameEngine;
@@ -13,6 +10,8 @@ import com.jeopardy.report.format.DOCXReportFormat;
 import com.jeopardy.report.format.PDFReportFormat;
 import com.jeopardy.report.format.ReportFormat;
 import com.jeopardy.report.format.TXTReportFormat;
+import com.jeopardy.ui.ConsoleUI;
+import com.jeopardy.utils.GameConstants;
 
 /**
  * Client is the main entry point for the Jeopardy game application.
@@ -31,63 +30,47 @@ public class Client {
 
         // Add shutdown hook to handle Ctrl+C gracefully
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("\n\nGame Quit. Generating final reports...");
+            System.out.println(GameConstants.MESSAGE_GAME_QUIT);
             gameEngine.onGameOver();
             generateReports(reportGenerator);
         }));
 
-        Client.showBanner();
+        ConsoleUI.showBanner();
         gameEngine.start();
     }
 
-    // ==================== UI Helper Methods ====================
+    // ==================== UI Helper Methods (Delegated to ConsoleUI) ====================
 
     /**
-     * Clears the console by printing newlines.
-     * This is a cross-platform solution that works in all environments.
+     * Clears the console.
+     * Delegates to ConsoleUI (SRP).
      */
     public static void clear() {
-        System.out.print("\033[H\033[2J\n");
-        System.out.flush();
-
-        Client.showBanner();
+        ConsoleUI.clear();
     }
 
     /**
      * Prints a blank line to the console.
+     * Delegates to ConsoleUI (SRP).
      */
     public static void newLine() {
-        System.out.println();
+        ConsoleUI.newLine();
     }
 
     /**
      * Pauses execution and waits for user to press any key.
-     * Used between turns to give players time to read results.
+     * Delegates to ConsoleUI (SRP).
      */
     public static void await() {
-        try {
-            System.out.println("\nPress any key to continue...\n");
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ConsoleUI.await();
     }
 
     /**
      * Displays the game banner from a file.
+     * Delegates to ConsoleUI (SRP).
      */
     public static void showBanner() {
-        String filename = "./banner.txt";
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
-        }
-        System.out.println("\n");
+        ConsoleUI.showBanner();
     }
 
     // ==================== User Input Methods ====================
@@ -114,7 +97,7 @@ public class Client {
             System.out.print(message);
 
             while (!scanner.hasNextInt()) {
-                System.out.println("[Error]: Please enter a valid number.");
+                System.out.println(GameConstants.ERROR_INVALID_NUMBER);
 
                 // Re-display options
                 for (int i = 0; i < options.length; i++) {
@@ -128,7 +111,7 @@ public class Client {
             scanner.nextLine(); // consume newline
 
             if (value < min || value > max) {
-                System.out.println(String.format("[Error]: Invalid input. Please enter a number between %d and %d.", min, max));
+                System.out.println(String.format(GameConstants.ERROR_OUT_OF_RANGE_FORMAT, min, max));
             }
         } while (value < min || value > max);
 
@@ -153,7 +136,7 @@ public class Client {
             answer = scanner.nextLine().trim().toUpperCase();
 
             if (answer.isEmpty() || !options.containsKey(answer)) {
-                System.out.println("[Error]: Invalid answer. Please enter a valid option.");
+                System.out.println(GameConstants.ERROR_INVALID_ANSWER);
                 System.out.print(question.promptString());
             }
         } while (answer.isEmpty() || !options.containsKey(answer));
@@ -182,7 +165,7 @@ public class Client {
                 reportGenerator.createReport();
             }
 
-            System.out.println("\nReports saved to output/ directory.");
+            System.out.println(GameConstants.MESSAGE_REPORTS_SAVED);
         } catch (Exception e) {
             System.err.println("Error generating reports: " + e.getMessage());
             e.printStackTrace();

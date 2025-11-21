@@ -54,15 +54,15 @@ public class GameIntegrationTest {
         System.out.println("TEST: Player Command Execution");
 
         // Test that commands can be created and set
-        SelectCategoryCommand categoryCmd = new SelectCategoryCommand();
+        SelectCategoryCommand categoryCmd = new SelectCategoryCommand(GameEngine.Instance());
         Assert.assertNotNull(categoryCmd);
         player1.setCommand(categoryCmd);
 
-        SelectQuestionCommand questionCmd = new SelectQuestionCommand();
+        SelectQuestionCommand questionCmd = new SelectQuestionCommand(GameEngine.Instance());
         Assert.assertNotNull(questionCmd);
         player1.setCommand(questionCmd);
 
-        AnswerQuestionCommand answerCmd = new AnswerQuestionCommand("4");
+        AnswerQuestionCommand answerCmd = new AnswerQuestionCommand(GameEngine.Instance(), "4");
         Assert.assertNotNull(answerCmd);
         player1.setCommand(answerCmd);
 

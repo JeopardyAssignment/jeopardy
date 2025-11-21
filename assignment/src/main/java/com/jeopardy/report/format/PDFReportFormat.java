@@ -77,7 +77,7 @@ public class PDFReportFormat implements ReportFormat {
             currentY -= LINE_HEIGHT * 2;
             
             // Write metadata
-            String caseId = data.get(0).caseId != null ? data.get(0).caseId : "UNKNOWN";
+            String caseId = data.get(0).getCaseId() != null ? data.get(0).getCaseId() : "UNKNOWN";
             contentStream.beginText();
             contentStream.setFont(PDType1Font.HELVETICA, 11);
             contentStream.newLineAtOffset(MARGIN, currentY);
@@ -88,8 +88,8 @@ public class PDFReportFormat implements ReportFormat {
             // Write player list
             Set<String> players = new LinkedHashSet<>();
             for (ActivityLog log : data) {
-                if (log.playerId != null && log.playerId != "System") {
-                    players.add(log.playerId);
+                if (log.getPlayerId() != null && log.getPlayerId() != "System") {
+                    players.add(log.getPlayerId());
                 }
             }
             
@@ -164,8 +164,8 @@ public class PDFReportFormat implements ReportFormat {
             // Write scores
             Map<String, Integer> finalScores = new LinkedHashMap<>();
             for (ActivityLog log : data) {
-                if (log.playerId != null && log.playerId != "System") {
-                    finalScores.put(log.playerId, log.scoreAfterPlay);
+                if (log.getPlayerId() != null && log.getPlayerId() != "System") {
+                    finalScores.put(log.getPlayerId(), log.getScoreAfterPlay());
                 }
             }
 

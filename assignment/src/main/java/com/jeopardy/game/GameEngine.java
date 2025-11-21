@@ -2,6 +2,7 @@ package com.jeopardy.game;
 
 import com.jeopardy.logging.observer.Publisher;
 import com.jeopardy.logging.ActivityLogBuilder;
+import com.jeopardy.logging.ActivityPublisher;
 import com.jeopardy.logging.observer.Subscriber;
 import com.jeopardy.Client;
 import com.jeopardy.command.AnswerQuestionCommand;
@@ -9,6 +10,7 @@ import com.jeopardy.command.SelectCategoryCommand;
 import com.jeopardy.command.SelectQuestionCommand;
 import com.jeopardy.logging.ActivityLog;
 import com.jeopardy.utils.ActivityType;
+import com.jeopardy.utils.GameConstants;
 import java.util.*;
 
 /**
@@ -28,17 +30,19 @@ import java.util.*;
  * - Singleton: Ensures single game instance via Instance() method
  * - Observer: Publishes game events to subscribers (e.g., ReportGenerator)
  *
+ * SOLID principles:
+ * - Implements GameController interface for Dependency Inversion Principle (DIP)
+ *
  * The GameEngine orchestrates all game components and serves as the primary
  * interface for game control and state management.
  */
-public class GameEngine implements Publisher {
+public class GameEngine implements GameController, Publisher {
 
     private static GameEngine instance;
     private Scanner scanner;
     private GameState state;
-    private final ArrayList<Subscriber> subscribers;
+    private final ActivityPublisher activityPublisher;
     private final ActivityLogBuilder activityLogBuilder;
-    private ActivityLog currentActivityLog;
     private boolean isGameOver;
 
     // ==================== Singleton Pattern ====================
@@ -49,7 +53,7 @@ public class GameEngine implements Publisher {
      */
     private GameEngine() {
         this.state = new GameState();
-        this.subscribers = new ArrayList<>();
+        this.activityPublisher = new ActivityPublisher();
         this.activityLogBuilder = new ActivityLogBuilder();
         this.isGameOver = false;
         this.scanner = new Scanner(System.in);
@@ -92,11 +96,12 @@ public class GameEngine implements Publisher {
 
     /**
      * Sets the current activity log for event tracking.
+     * Delegates to the ActivityPublisher.
      *
      * @param log the ActivityLog to set
      */
     public void setCurrentActivityLog(ActivityLog log) {
-        this.currentActivityLog = log;
+        this.activityPublisher.setCurrentActivityLog(log);
     }
 
     // ==================== Score Management ====================
@@ -140,12 +145,14 @@ public class GameEngine implements Publisher {
      */
     public void onGameOver() {
         this.isGameOver = true;
-        this.currentActivityLog = this.activityLogBuilder
-                        .setCaseId("GAME-001")
-                        .setPlayerId("System")
-                        .setActivity(ActivityType.GAME_OVER)
-                        .setTimestamp()
-                        .createActivityLog();
+        this.activityPublisher.setCurrentActivityLog(
+            this.activityLogBuilder
+                    .setCaseId(GameConstants.DEFAULT_CASE_ID)
+                    .setPlayerId(GameConstants.SYSTEM_PLAYER_ID)
+                    .setActivity(ActivityType.GAME_OVER)
+                    .setTimestamp()
+                    .createActivityLog()
+        );
 
         this.activityLogBuilder.reset();
         this.notifySubscribers();
@@ -156,12 +163,14 @@ public class GameEngine implements Publisher {
      * Logs the start and notifies all subscribers.
      */
     public void onGameStart() {
-        this.currentActivityLog = this.activityLogBuilder
-                        .setCaseId("GAME-001")
-                        .setPlayerId("System")
-                        .setActivity(ActivityType.START_GAME)
-                        .setTimestamp()
-                        .createActivityLog();
+        this.activityPublisher.setCurrentActivityLog(
+            this.activityLogBuilder
+                    .setCaseId(GameConstants.DEFAULT_CASE_ID)
+                    .setPlayerId(GameConstants.SYSTEM_PLAYER_ID)
+                    .setActivity(ActivityType.START_GAME)
+                    .setTimestamp()
+                    .createActivityLog()
+        );
 
         this.activityLogBuilder.reset();
         this.notifySubscribers();
@@ -174,13 +183,15 @@ public class GameEngine implements Publisher {
      * @param state the result of the file load operation
      */
     public void onFileLoad(String state) {
-        this.currentActivityLog = this.activityLogBuilder
-                        .setCaseId("GAME-001")
-                        .setPlayerId("System")
-                        .setActivity(ActivityType.LOAD_FILE)
-                        .setTimestamp()
-                        .setResult(state)
-                        .createActivityLog();
+        this.activityPublisher.setCurrentActivityLog(
+            this.activityLogBuilder
+                    .setCaseId(GameConstants.DEFAULT_CASE_ID)
+                    .setPlayerId(GameConstants.SYSTEM_PLAYER_ID)
+                    .setActivity(ActivityType.LOAD_FILE)
+                    .setTimestamp()
+                    .setResult(state)
+                    .createActivityLog()
+        );
 
         this.activityLogBuilder.reset();
         this.notifySubscribers();
@@ -212,40 +223,33 @@ public class GameEngine implements Publisher {
 
     /**
      * Registers a subscriber to receive game event notifications.
-     * Duplicate subscriptions are prevented.
+     * Delegates to the ActivityPublisher (SRP).
      *
      * @param s the Subscriber to register
      */
     @Override
     public void subscribe(Subscriber s) {
-        if (s != null && !subscribers.contains(s)) {
-            subscribers.add(s);
-        }
+        this.activityPublisher.subscribe(s);
     }
 
     /**
      * Unregisters a subscriber from receiving notifications.
+     * Delegates to the ActivityPublisher (SRP).
      *
      * @param s the Subscriber to unregister
      */
     @Override
     public void unsubscribe(Subscriber s) {
-        if (s != null) {
-            subscribers.remove(s);
-        }
+        this.activityPublisher.unsubscribe(s);
     }
 
     /**
      * Notifies all registered subscribers of a game event.
-     * Sends the current activity log to all subscribers.
+     * Delegates to the ActivityPublisher (SRP).
      */
     @Override
     public void notifySubscribers() {
-        for (Subscriber subscriber : subscribers) {
-            if (subscriber != null) {
-                subscriber.update(this.currentActivityLog);
-            }
-        }
+        this.activityPublisher.notifySubscribers();
     }
 
     /**
@@ -273,29 +277,31 @@ public class GameEngine implements Publisher {
         this.state.setPlayers(this.scanner);
 
         // Subscribe all players to the same subscribers as the GameEngine
-        for (Subscriber subscriber : subscribers) {
+        for (Subscriber subscriber : activityPublisher.getSubscribers()) {
             subscribePlayersTo(subscriber);
         }
 
         Client.clear();
 
-        this.currentActivityLog = this.activityLogBuilder
-                                    .setCaseId("GAME-001")
-                                    .setTimestamp()
-                                    .setPlayerId("System")
-                                    .setActivity(ActivityType.SELECT_PLAYER_COUNT)
-                                    .setResult(Integer.toString(this.state.getPlayers().size()))
-                                    .createActivityLog();
+        this.activityPublisher.setCurrentActivityLog(
+            this.activityLogBuilder
+                    .setCaseId(GameConstants.DEFAULT_CASE_ID)
+                    .setTimestamp()
+                    .setPlayerId(GameConstants.SYSTEM_PLAYER_ID)
+                    .setActivity(ActivityType.SELECT_PLAYER_COUNT)
+                    .setResult(Integer.toString(this.state.getPlayers().size()))
+                    .createActivityLog()
+        );
         this.activityLogBuilder.reset();
         this.notifySubscribers();
 
         if (this.state.setQuestionService(scanner)) {
-            this.onFileLoad("SUCCESS");
+            this.onFileLoad(GameConstants.RESULT_SUCCESS);
             Client.clear();
 
             this.update();
         } else {
-            this.onFileLoad("FAILED");
+            this.onFileLoad(GameConstants.RESULT_FAILED);
         }
     }
 
@@ -314,22 +320,22 @@ public class GameEngine implements Publisher {
         // Display current player and score
         System.out.println(String.format("=== %s's Turn (Score %s) ===", currentPlayer.getId(), currentPlayer.getCurrentScore()));
 
-        // Step 1: Select category
-        currentPlayer.setCommand(new SelectCategoryCommand());
+        // Step 1: Select category (using dependency injection for DIP)
+        currentPlayer.setCommand(new SelectCategoryCommand(this));
         currentPlayer.doCommand();
 
         Client.clear();
 
-        // Step 2: Select question
-        currentPlayer.setCommand(new SelectQuestionCommand());
+        // Step 2: Select question (using dependency injection for DIP)
+        currentPlayer.setCommand(new SelectQuestionCommand(this));
         currentPlayer.doCommand();
 
         Client.clear();
 
-        // Step 3: Answer question
+        // Step 3: Answer question (using dependency injection for DIP)
         System.out.println(String.format("=== %s's Turn (Score %s) ===", currentPlayer.getId(), currentPlayer.getCurrentScore()));
         String answer = Client.prompt(this.state.getCurrentQuestion(), this.scanner);
-        currentPlayer.setCommand(new AnswerQuestionCommand(answer));
+        currentPlayer.setCommand(new AnswerQuestionCommand(this, answer));
         currentPlayer.doCommand();
 
         this.onTurnEnd();

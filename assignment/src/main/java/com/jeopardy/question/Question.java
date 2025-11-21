@@ -1,6 +1,7 @@
 package com.jeopardy.question;
 
 import java.util.*;
+import com.jeopardy.exception.InvalidQuestionStateException;
 
 /**
  * Question represents a single Jeopardy game question with multiple choice options.
@@ -138,12 +139,33 @@ public class Question {
      * Evaluates whether the given answer is correct.
      * Marks the question as answered and performs case-insensitive comparison.
      *
+     * SOLID principles:
+     * - Added validation to prevent invalid state (improved error handling)
+     *
      * @param answer the player's answer to evaluate
      * @return true if the answer is correct, false otherwise
+     * @throws InvalidQuestionStateException if the question has already been answered
+     * @throws IllegalArgumentException if the answer is null or empty
+     * @throws IllegalStateException if the correct answer has not been set
      */
     public boolean evaluate(String answer) {
+        // Validation: Check if question already answered
+        if (this.isAnswered) {
+            throw new InvalidQuestionStateException("Question has already been answered");
+        }
+
+        // Validation: Check if correct answer is set
+        if (this.correctAnswer == null || this.correctAnswer.trim().isEmpty()) {
+            throw new IllegalStateException("Question has no correct answer set");
+        }
+
+        // Validation: Check if answer is valid
+        if (answer == null || answer.trim().isEmpty()) {
+            throw new IllegalArgumentException("Answer cannot be null or empty");
+        }
+
         this.isAnswered = true;
-        return answer != null && answer.equalsIgnoreCase(this.correctAnswer);
+        return answer.equalsIgnoreCase(this.correctAnswer);
     }
 
     // ==================== Options Management ====================
