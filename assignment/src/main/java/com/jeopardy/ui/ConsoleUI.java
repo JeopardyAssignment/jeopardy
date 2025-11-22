@@ -1,7 +1,7 @@
 package com.jeopardy.ui;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import com.jeopardy.utils.GameConstants;
 
@@ -56,18 +56,21 @@ public class ConsoleUI {
     }
 
     /**
-     * Displays the game banner from a file.
+     * Displays the game banner from a resource file.
      * Reads the banner file line by line and prints to console.
-     * Uses Path API for cross-platform file access.
+     * Loads from classpath for better portability and packaging.
      */
     public static void showBanner() {
-        try (BufferedReader br = new BufferedReader(new FileReader(GameConstants.BANNER_FILE.toFile()))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                ConsoleUI.class.getResourceAsStream(GameConstants.BANNER_FILE)))) {
             String line;
             while ((line = br.readLine()) != null) {
                 System.out.println(line);
             }
         } catch (IOException e) {
             System.err.println("Error reading banner file: " + e.getMessage());
+        } catch (NullPointerException e) {
+            System.err.println("Error: Banner file not found in resources.");
         }
         System.out.println("\n");
     }
