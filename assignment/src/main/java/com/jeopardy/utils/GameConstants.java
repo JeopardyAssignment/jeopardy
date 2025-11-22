@@ -56,10 +56,10 @@ public final class GameConstants {
     public static final Path OUTPUT_DIRECTORY = Paths.get("output");
 
     /**
-     * Path to the banner file.
-     * Uses Path API for cross-platform compatibility.
+     * Resource path to the banner file.
+     * Loaded from classpath for better portability and packaging.
      */
-    public static final Path BANNER_FILE = Paths.get("banner.txt");
+    public static final String BANNER_FILE = "/banner.txt";
 
     // ==================== Turn Offset ====================
 
