@@ -117,8 +117,8 @@ public class GameState {
                 }
             } while (playerName.trim().isEmpty());
             
-            com.jeopardy.logging.observer.Subscriber sub = new com.jeopardy.report.ReportGenerator();
-            Player newPlayer = new Player(playerName.trim(), sub);//
+
+            Player newPlayer = new Player(playerName.trim());//
             this.players.add(newPlayer);
         }
     }

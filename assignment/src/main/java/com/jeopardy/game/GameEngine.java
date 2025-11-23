@@ -262,6 +262,7 @@ public class GameEngine implements GameController, Publisher {
         if (state != null && state.getPlayers() != null) {
             for (Player player : state.getPlayers()) {
                 player.subscribe(s);
+                player.notifySubscribers();
             }
         }
     }

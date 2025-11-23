@@ -38,13 +38,12 @@ public class Player implements Publisher {
      *
      * @param id the unique identifier for this player
      */
-    public Player(String id, Subscriber initSub) {
+    public Player(String id) {
         this.id = id;
         this.subscribers = new ArrayList<>();
         this.currentScore = 0;
-        this.subscribe(initSub);
 
-        this.notifySubscribers();
+
     }
 
     // ==================== Player Identity ====================
