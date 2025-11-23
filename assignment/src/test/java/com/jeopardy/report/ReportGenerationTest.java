@@ -25,10 +25,11 @@ import java.util.ArrayList;
 public class ReportGenerationTest {
     
     private ReportGenerator reportGenerator;
+
     private ArrayList<ActivityLog> sampleLogs;
     private Player player1;
     private Player player2;
-    private Question question;
+    private ArrayList<Question> question;
 
     /**
      * Set up test fixtures: create sample activity logs and players.
@@ -37,26 +38,26 @@ public class ReportGenerationTest {
     public void setUp() {
         reportGenerator = new ReportGenerator();
         sampleLogs = new ArrayList<>();
-        
+        QsForRGTest questionGenerator = new QsForRGTest();
         player1 = new Player("Alice");
         player2 = new Player("Bob");
-        question = new Question();
+        question = questionGenerator.getQuestionsForReportGenTest();
         
         // Create sample activity logs
         sampleLogs.add(createActivityLog("game-001", player1, ActivityType.SELECT_CATEGORY, 
-            "Science", 200, "DNA", "Correct", 200, 1));
+            "Science", 200, "DNA", "Correct", 200, this.question.get(0), 1));
         
         sampleLogs.add(createActivityLog("game-001", player2, ActivityType.SELECT_CATEGORY, 
-            "History", 300, "1776", "Correct", 300, 2));
+            "History", 300, "1776", "Correct", 300, this.question.get(1), 2));
         
         sampleLogs.add(createActivityLog("game-001", player1, ActivityType.SELECT_CATEGORY, 
-            "Literature", 400, "Shakespeare", "Correct", 600, 3));
+            "Literature", 400, "Shakespeare", "Correct", 600, this.question.get(2),3));
         
         sampleLogs.add(createActivityLog("game-001", player2, ActivityType.SELECT_CATEGORY, 
-            "Math", 200, "42", "Incorrect", 300, 4));
+            "Math", 200, "42", "Incorrect", 300, this.question.get(3), 4));
         
         sampleLogs.add(createActivityLog("game-001", player1, ActivityType.SELECT_CATEGORY, 
-            "Science", 500, "Photosynthesis", "Correct", 1100, 5));
+            "Science", 500, "Photosynthesis", "Correct", 1100, this.question.get(4), 5));
     }
 
     /**
@@ -64,7 +65,7 @@ public class ReportGenerationTest {
      */
     private ActivityLog createActivityLog(String caseId, Player player, ActivityType activity,
                                          String category, int value, String answer, 
-                                         String result, int score, int turn) {
+                                         String result, int score, Question question, int turn) {
         return new ActivityLogBuilder()
             .setCaseId(caseId)
             .setPlayerId(player)
@@ -203,7 +204,7 @@ public class ReportGenerationTest {
         
         // Add new logs after clearing
         ActivityLog newLog = createActivityLog("game-002", player1, ActivityType.SELECT_CATEGORY,
-            "Geography", 100, "France", "Correct", 100, 1);
+            "Geography", 100, "France", "Correct", 100, question.get(0), 1);
         reportGenerator.update(newLog);
         Assert.assertEquals(1, reportGenerator.getActivityCount());
     }
