@@ -39,8 +39,9 @@ public class ReportGenerationTest {
         reportGenerator = new ReportGenerator();
         sampleLogs = new ArrayList<>();
         QsForRGTest questionGenerator = new QsForRGTest();
-        player1 = new Player("Alice");
-        player2 = new Player("Bob");
+        
+        player1 = new Player("Alice", reportGenerator);
+        player2 = new Player("Bob", reportGenerator);
         question = questionGenerator.getQuestionsForReportGenTest();
         
         // Create sample activity logs
@@ -95,7 +96,7 @@ public class ReportGenerationTest {
         reportGenerator.setFormat(csvFormat);
         reportGenerator.createReport();
         
-        Assert.assertEquals("Report generator should have 5 activity logs", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Report generator should have 7 activity logs", 7, reportGenerator.getActivityCount());
     }
 
     /**
@@ -112,7 +113,7 @@ public class ReportGenerationTest {
         reportGenerator.setFormat(txtFormat);
         reportGenerator.createReport();
         
-        Assert.assertEquals("Report generator should have 5 activity logs", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Report generator should have 7 activity logs", 7, reportGenerator.getActivityCount());
     }
 
     /**
@@ -129,7 +130,7 @@ public class ReportGenerationTest {
         reportGenerator.setFormat(pdfFormat);
         reportGenerator.createReport();
         
-        Assert.assertEquals("Report generator should have 5 activity logs", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Report generator should have 7 activity logs", 7, reportGenerator.getActivityCount());
     }
 
     /**
@@ -146,7 +147,7 @@ public class ReportGenerationTest {
         reportGenerator.setFormat(docxFormat);
         reportGenerator.createReport();
         
-        Assert.assertEquals("Report generator should have 5 activity logs", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Report generator should have 7 activity logs", 7, reportGenerator.getActivityCount());
     }
 
     /**
@@ -162,17 +163,17 @@ public class ReportGenerationTest {
         // Generate CSV
         reportGenerator.setFormat(new CSVReportFormat());
         reportGenerator.createReport();
-        Assert.assertEquals(5, reportGenerator.getActivityCount());
+        Assert.assertEquals(7, reportGenerator.getActivityCount());
         
         // Generate TXT
         reportGenerator.setFormat(new TXTReportFormat());
         reportGenerator.createReport();
-        Assert.assertEquals(5, reportGenerator.getActivityCount());
+        Assert.assertEquals(7, reportGenerator.getActivityCount());
         
         // Generate PDF
         reportGenerator.setFormat(new PDFReportFormat());
         reportGenerator.createReport();
-        Assert.assertEquals(5, reportGenerator.getActivityCount());
+        Assert.assertEquals(7, reportGenerator.getActivityCount());
     }
 
     /**
@@ -181,6 +182,7 @@ public class ReportGenerationTest {
      */
     @Test
     public void testEmptyReportGeneration() {
+        reportGenerator.clearData();
         CSVReportFormat csvFormat = new CSVReportFormat();
         reportGenerator.setFormat(csvFormat);
         reportGenerator.createReport();
@@ -197,7 +199,7 @@ public class ReportGenerationTest {
         for (ActivityLog log : sampleLogs) {
             reportGenerator.update(log);
         }
-        Assert.assertEquals(5, reportGenerator.getActivityCount());
+        Assert.assertEquals(7, reportGenerator.getActivityCount());
         
         reportGenerator.clearData();
         Assert.assertEquals("Cleared report should have 0 activity logs", 0, reportGenerator.getActivityCount());
@@ -221,11 +223,11 @@ public class ReportGenerationTest {
         
         CSVReportFormat csv = new CSVReportFormat();
         reportGenerator.setFormat(csv);
-        Assert.assertEquals("Data should persist after setting format", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Data should persist after setting format", 7, reportGenerator.getActivityCount());
         
         TXTReportFormat txt = new TXTReportFormat();
         reportGenerator.setFormat(txt);
-        Assert.assertEquals("Data should persist after switching format", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Data should persist after switching format", 7, reportGenerator.getActivityCount());
     }
 
     /**
@@ -234,13 +236,13 @@ public class ReportGenerationTest {
      */
     @Test
     public void testActivityLogCollection() {
-        Assert.assertEquals("Initially empty", 0, reportGenerator.getActivityCount());
+        Assert.assertEquals("Intantiates with 2", 2, reportGenerator.getActivityCount());
         
         for (ActivityLog log : sampleLogs) {
             reportGenerator.update(log);
         }
         
-        Assert.assertEquals("Should have collected all 5 logs", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Should have collected all 7 logs", 7, reportGenerator.getActivityCount());
     }
 
     /**
@@ -249,6 +251,7 @@ public class ReportGenerationTest {
      */
     @Test
     public void testNullLogHandling() {
+        reportGenerator.clearData();
         reportGenerator.update(null);
         Assert.assertEquals("Null log should not be added", 0, reportGenerator.getActivityCount());
         

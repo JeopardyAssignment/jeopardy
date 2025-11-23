@@ -34,7 +34,8 @@ public class ActivityLogBuilderTest {
         mockQuestion = new Question();
         
         // Create a mock Player
-        mockPlayer = new Player("Player 1");
+        com.jeopardy.logging.observer.Subscriber sub = new com.jeopardy.report.ReportGenerator();
+        mockPlayer = new Player("Player 1", sub);
     }
 
     /**

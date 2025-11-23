@@ -26,8 +26,9 @@ public class GameIntegrationTest {
         System.out.println("================================================");
 
         GameEngine.Instance();
-        player1 = new Player("Alice");
-        player2 = new Player("Bob");
+        com.jeopardy.logging.observer.Subscriber sub = new com.jeopardy.report.ReportGenerator();
+        player1 = new Player("Alice", sub);
+        player2 = new Player("Bob", sub);
         gameState = new GameState();
 
         // Create a question

@@ -19,8 +19,9 @@ public class commandTest {
         GameEngine.Instance();
 
         // Create players
-        player1 = new Player("Alice");
-        new Player("Bob");
+        com.jeopardy.logging.observer.Subscriber sub = new com.jeopardy.report.ReportGenerator();
+        player1 = new Player("Alice", sub);
+        new Player("Bob", sub);
 
         // Create a question
         question = new Question();

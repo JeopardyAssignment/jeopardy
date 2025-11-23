@@ -38,10 +38,11 @@ public class Player implements Publisher {
      *
      * @param id the unique identifier for this player
      */
-    public Player(String id) {
+    public Player(String id, Subscriber initSub) {
         this.id = id;
         this.subscribers = new ArrayList<>();
         this.currentScore = 0;
+        this.subscribe(initSub);
 
         this.notifySubscribers();
     }
@@ -148,8 +149,9 @@ public class Player implements Publisher {
                 if (subscriber != null) {
                     ActivityLog activity = new ActivityLogBuilder()
                         .setCaseId("GAME001")
+                        .setAnswerGiven(this.id)
                         .setPlayerId(this)
-                        .setResult(id)
+                        .setResult("N/A")
                         .setActivity(ActivityType.ENTER_PLAYER_NAME)
                         .setTimestamp()
                         .createActivityLog();

@@ -116,8 +116,9 @@ public class GameState {
                     System.out.println("[Error]: Invalid name. Must be at least 1 character long.");
                 }
             } while (playerName.trim().isEmpty());
-
-            Player newPlayer = new Player(playerName.trim());
+            
+            com.jeopardy.logging.observer.Subscriber sub = new com.jeopardy.report.ReportGenerator();
+            Player newPlayer = new Player(playerName.trim(), sub);//
             this.players.add(newPlayer);
         }
     }
