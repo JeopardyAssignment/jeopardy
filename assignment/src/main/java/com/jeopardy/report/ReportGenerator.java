@@ -2,7 +2,10 @@ package com.jeopardy.report;
 
 import com.jeopardy.logging.observer.Subscriber;
 import com.jeopardy.report.format.ReportFormat;
+import com.jeopardy.report.format.CSVReportFormat;
 import com.jeopardy.logging.ActivityLog;
+import com.jeopardy.logging.ActivityLogBuilder;
+import com.jeopardy.utils.ActivityType;
 import com.jeopardy.utils.GameConstants;
 
 import java.util.*;
@@ -79,6 +82,19 @@ public class ReportGenerator implements Subscriber {
         if (format == null) {
             throw new NullPointerException("Report format must be set before creating a report");
         }
+         ActivityType activityType = (format instanceof CSVReportFormat)
+            ? ActivityType.GENERATE_EVENT_LOG
+            : ActivityType.GENERATE_REPORT;
+
+        ActivityLog reportActivity = new ActivityLogBuilder()
+            .setCaseId(GameConstants.DEFAULT_CASE_ID)
+            .setPlayerId(GameConstants.SYSTEM_PLAYER_ID)
+            .setActivity(activityType)
+            .setTimestamp()
+            .setResult(GameConstants.RESULT_SUCCESS)
+            .createActivityLog();
+
+        this.data.add(reportActivity);
         this.format.generate(data);
     }
 

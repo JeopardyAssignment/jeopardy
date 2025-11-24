@@ -6,6 +6,7 @@ import com.jeopardy.logging.ActivityLogBuilder;
 import com.jeopardy.logging.observer.Subscriber;
 import com.jeopardy.logging.ActivityLog;
 import com.jeopardy.utils.ActivityType;
+import com.jeopardy.utils.GameConstants;
 
 import java.util.*;
 
@@ -147,7 +148,7 @@ public class Player implements Publisher {
             for (Subscriber subscriber : this.subscribers) {
                 if (subscriber != null) {
                     ActivityLog activity = new ActivityLogBuilder()
-                        .setCaseId("GAME001")
+                        .setCaseId(GameConstants.DEFAULT_CASE_ID)
                         .setAnswerGiven(this.id)
                         .setPlayerId(this)
                         .setResult("N/A")

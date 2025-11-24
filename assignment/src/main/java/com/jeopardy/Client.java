@@ -31,8 +31,7 @@ public class Client {
         // Add shutdown hook to handle Ctrl+C gracefully
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println(GameConstants.MESSAGE_GAME_QUIT);
-            gameEngine.onGameOver();
-            generateReports(reportGenerator);
+            generateReports(reportGenerator, gameEngine);
         }));
 
         ConsoleUI.showBanner();
@@ -152,18 +151,21 @@ public class Client {
      *
      * @param reportGenerator the ReportGenerator containing collected activity logs
      */
-    private static void generateReports(ReportGenerator reportGenerator) {
+    private static void generateReports(ReportGenerator reportGenerator, GameEngine gameEngine) {
         try {
-            ArrayList<ReportFormat> formats = new ArrayList<>();
-            formats.add(new CSVReportFormat());
-            formats.add(new PDFReportFormat());
-            formats.add(new DOCXReportFormat());
-            formats.add(new TXTReportFormat());
+            ArrayList<ReportFormat> nonCsvFormats = new ArrayList<>();
+            nonCsvFormats.add(new PDFReportFormat());
+            nonCsvFormats.add(new DOCXReportFormat());
+            nonCsvFormats.add(new TXTReportFormat());
 
-            for (ReportFormat f : formats) {
+            for (ReportFormat f : nonCsvFormats) {
                 reportGenerator.setFormat(f);
                 reportGenerator.createReport();
             }
+
+            gameEngine.onGameOver();
+            reportGenerator.setFormat(new CSVReportFormat());
+            reportGenerator.createReport();
 
             System.out.println(GameConstants.MESSAGE_REPORTS_SAVED);
         } catch (Exception e) {

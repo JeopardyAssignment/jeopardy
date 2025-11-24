@@ -45,19 +45,19 @@ public class ReportGenerationTest {
         question = questionGenerator.getQuestionsForReportGenTest();
         
         // Create sample activity logs
-        sampleLogs.add(createActivityLog("game-001", player1, ActivityType.SELECT_CATEGORY, 
+        sampleLogs.add(createActivityLog("GAME-001", player1, ActivityType.SELECT_CATEGORY, 
             "Science", 200, "DNA", "Correct", 200, this.question.get(0), 1));
         
-        sampleLogs.add(createActivityLog("game-001", player2, ActivityType.SELECT_CATEGORY, 
+        sampleLogs.add(createActivityLog("GAME-001", player2, ActivityType.SELECT_CATEGORY, 
             "History", 300, "1776", "Correct", 300, this.question.get(1), 2));
         
-        sampleLogs.add(createActivityLog("game-001", player1, ActivityType.SELECT_CATEGORY, 
+        sampleLogs.add(createActivityLog("GAME-001", player1, ActivityType.SELECT_CATEGORY, 
             "Literature", 400, "Shakespeare", "Correct", 600, this.question.get(2),3));
         
-        sampleLogs.add(createActivityLog("game-001", player2, ActivityType.SELECT_CATEGORY, 
+        sampleLogs.add(createActivityLog("GAME-001", player2, ActivityType.SELECT_CATEGORY, 
             "Math", 200, "42", "Incorrect", 300, this.question.get(3), 4));
         
-        sampleLogs.add(createActivityLog("game-001", player1, ActivityType.SELECT_CATEGORY, 
+        sampleLogs.add(createActivityLog("GAME-001", player1, ActivityType.SELECT_CATEGORY, 
             "Science", 500, "Photosynthesis", "Correct", 1100, this.question.get(4), 5));
     }
 
@@ -96,7 +96,7 @@ public class ReportGenerationTest {
         reportGenerator.setFormat(csvFormat);
         reportGenerator.createReport();
         
-        Assert.assertEquals("Report generator should have 5 activity logs", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Report generator should have 6 activity logs", 6, reportGenerator.getActivityCount());
     }
 
     /**
@@ -113,7 +113,7 @@ public class ReportGenerationTest {
         reportGenerator.setFormat(txtFormat);
         reportGenerator.createReport();
         
-        Assert.assertEquals("Report generator should have 5 activity logs", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Report generator should have 6 activity logs", 6, reportGenerator.getActivityCount());
     }
 
     /**
@@ -130,7 +130,7 @@ public class ReportGenerationTest {
         reportGenerator.setFormat(pdfFormat);
         reportGenerator.createReport();
         
-        Assert.assertEquals("Report generator should have 5 activity logs", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Report generator should have 6 activity logs", 6, reportGenerator.getActivityCount());
     }
 
     /**
@@ -147,12 +147,13 @@ public class ReportGenerationTest {
         reportGenerator.setFormat(docxFormat);
         reportGenerator.createReport();
         
-        Assert.assertEquals("Report generator should have 5 activity logs", 5, reportGenerator.getActivityCount());
+        Assert.assertEquals("Report generator should have 6 activity logs", 6, reportGenerator.getActivityCount());
     }
 
     /**
      * Test switching between multiple report formats.
      * Verifies that reports can be generated sequentially in different formats.
+     * With each new format generated, another activity is added to the report generator.
      */
     @Test
     public void testMultipleReportFormats() {
@@ -163,17 +164,17 @@ public class ReportGenerationTest {
         // Generate CSV
         reportGenerator.setFormat(new CSVReportFormat());
         reportGenerator.createReport();
-        Assert.assertEquals(5, reportGenerator.getActivityCount());
+        Assert.assertEquals(6, reportGenerator.getActivityCount());
         
         // Generate TXT
         reportGenerator.setFormat(new TXTReportFormat());
         reportGenerator.createReport();
-        Assert.assertEquals(5, reportGenerator.getActivityCount());
+        Assert.assertEquals(7, reportGenerator.getActivityCount());
         
         // Generate PDF
         reportGenerator.setFormat(new PDFReportFormat());
         reportGenerator.createReport();
-        Assert.assertEquals(5, reportGenerator.getActivityCount());
+        Assert.assertEquals(8, reportGenerator.getActivityCount());
     }
 
     /**
@@ -187,7 +188,7 @@ public class ReportGenerationTest {
         reportGenerator.setFormat(csvFormat);
         reportGenerator.createReport();
         
-        Assert.assertEquals("Empty report should have 0 activity logs", 0, reportGenerator.getActivityCount());
+        Assert.assertEquals("Empty report should have 1 activity log", 1, reportGenerator.getActivityCount());
     }
 
     /**
