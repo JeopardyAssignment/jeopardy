@@ -8,7 +8,7 @@ package com.jeopardy.exception;
  *
  * Example usage:
  * <pre>
- * if (playerCount < MIN_PLAYERS || playerCount > MAX_PLAYERS) {
+ * if (playerCount &lt; MIN_PLAYERS || playerCount &gt; MAX_PLAYERS) {
  *     throw new InvalidPlayerCountException(playerCount, MIN_PLAYERS, MAX_PLAYERS);
  * }
  * </pre>

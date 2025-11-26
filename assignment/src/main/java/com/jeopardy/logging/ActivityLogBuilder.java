@@ -117,8 +117,8 @@ public class ActivityLogBuilder {
      * @param player the Player object whose ID will be extracted and set
      * @return this ActivityLogBuilder instance for method chaining
      */
-    public ActivityLogBuilder setPlayerId(String name) {
-        this.playerId = name;
+    public ActivityLogBuilder setPlayerId(String player) {
+        this.playerId = player;
         return this;
     }
 

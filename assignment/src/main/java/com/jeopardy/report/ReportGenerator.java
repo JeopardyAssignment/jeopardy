@@ -59,6 +59,7 @@ public class ReportGenerator implements Subscriber {
      * implementing the Strategy design pattern.
      * 
      * @param r the ReportFormat implementation to use for generating reports
+     * @return this ReportGenerator instance for method chaining
      */
     public ReportGenerator setFormat(ReportFormat r) {
         this.format = r;

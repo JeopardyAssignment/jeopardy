@@ -20,6 +20,11 @@ public class Client {
     private static GameEngine gameEngine;
     
     // ==================== Main Entry Point ====================
+    /**
+     *  Main method.
+     * Starts the Jeopardy game application.
+     * @param args
+     */
 
     public static void main(String[] args) {
         ReportGenerator reportGenerator = new ReportGenerator();
@@ -161,6 +166,7 @@ public class Client {
      * Creates an output directory if it doesn't exist and saves the reports there.
      *
      * @param reportGenerator the ReportGenerator containing collected activity logs
+     * @param gameEngine the GameEngine instance to notify of game over
      */
     private static void generateReports(ReportGenerator reportGenerator, GameEngine gameEngine) {
         try {
