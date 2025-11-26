@@ -193,7 +193,11 @@ public class GameState {
         String[] categoryArray = categories.toArray(new String[0]);
 
         int categoryIndex = Client.prompt("What category of question? ", categoryArray, scanner);
-
+        if (categoryIndex <= 0){
+            String selectedCategory = "END GAME";
+            this.currentCategory = selectedCategory;
+            return selectedCategory;
+        }
         String selectedCategory = categoryArray[categoryIndex - 1];
         this.currentCategory = selectedCategory;
 

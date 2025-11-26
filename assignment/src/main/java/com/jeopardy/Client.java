@@ -89,6 +89,11 @@ public class Client {
         int max = options.length;
 
         do {
+            value = -1;
+            if (gameEngine.isGameOver()) {
+                System.out.println("Game is over. No further input accepted.");
+                return 0;
+            }
             // Display options in numbered list
             for (int i = 0; i < options.length; i++) {
                 System.out.println(String.format("%d) %s", i + 1, options[i]));
@@ -113,6 +118,7 @@ public class Client {
                 System.out.println(String.format(GameConstants.ERROR_OUT_OF_RANGE_FORMAT, min, max));
             }
         } while (value < min || value > max);
+        clear();
 
         return value;
     }
@@ -133,12 +139,17 @@ public class Client {
 
         do {
             answer = scanner.nextLine().trim().toUpperCase();
+            if (gameEngine.isGameOver()) {
+                System.out.println("Game is over. No further input accepted.");
+                break;
+            }
 
             if (answer.isEmpty() || !options.containsKey(answer)) {
                 System.out.println(GameConstants.ERROR_INVALID_ANSWER);
                 System.out.print(question.promptString());
             }
         } while (answer.isEmpty() || !options.containsKey(answer));
+        clear();
 
         return answer;
     }

@@ -324,6 +324,9 @@ public class GameEngine implements GameController, Publisher {
         // Step 1: Select category (using dependency injection for DIP)
         currentPlayer.setCommand(new SelectCategoryCommand(this));
         currentPlayer.doCommand();
+        if(this.isGameOver()){
+            return;
+        }
 
         Client.clear();
 
