@@ -4,10 +4,7 @@ import com.jeopardy.question.loader.CSVQuestionLoader;
 import com.jeopardy.question.loader.JSONQuestionLoader;
 import com.jeopardy.question.loader.XMLQuestionLoader;
 import com.jeopardy.utils.GameConstants;
-import com.jeopardy.question.Question;
-import com.jeopardy.question.QuestionService;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;
 

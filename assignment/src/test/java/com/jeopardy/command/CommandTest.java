@@ -9,7 +9,7 @@ import com.jeopardy.question.Question;
 
 import java.lang.reflect.Field;
 
-public class commandTest {
+public class CommandTest {
 
     private Player player1;
     private Question question;
